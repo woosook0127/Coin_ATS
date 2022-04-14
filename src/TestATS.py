@@ -41,7 +41,7 @@ while True:
 			current_price = pyupbit.get_current_price(coin_type)
 
 			if target_price < current_price:
-				my_krw = get_balance("KRW")
+				my_krw = upbit.get_balance("KRW")
 				if my_krw > 5000:
 					print(f"Buy {coin_type}: {current_price}")
 					upbit.buy_market_order(coin_type, my_krw*0.9995) # 전량 매수
