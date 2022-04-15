@@ -2,6 +2,8 @@ import time
 import pyupbit
 import datetime
 
+Class CoinTrading():
+
 print("Initialize")
 access = "xTgB4NarGyQ1hYbkFRtMGVJhskdVTsw0mRlzdyES"
 secret = "1xk3iwoQgqyCO7uQ1ZE9Ce0fyAFrFm0w3FOUDNOr"
@@ -20,6 +22,22 @@ def get_start_time(coin_type):
 	start_time = df.index[0]
 	return start_time
 
+# Finding Hyper parameter- k
+def find_hyper_k(coin_type, term):
+    # k value의 최적값을 찾기 위해 backtesting하며 수익률을 확인한다.
+    df = pd.DataFrame([[0,0,0]], columns=['수익률', 'MDD%', 'k-value'])
+
+    for i in tqdm(np.arange(0, 0.5, 0.001), desc='Progress', mininterval=0.1):
+        profit, mdd = back_testing(coin_type, i, term, False)
+
+        max_profit = df['수익률'].max()
+        if profit >= max_profit:
+            df = df.append(pd.Series([profit, mdd, i], index=df.columns), ignore_index=True)
+
+    filter = df['수익률'] == df['수익률'].max()
+    hyper_k = df[filter].iloc[0,2]
+    
+    return hyper_k
 
 print("Enter activate")
 buying_price = 99999999999
