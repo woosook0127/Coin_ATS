@@ -1,4 +1,4 @@
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 import sys
 import time
 import datetime
@@ -9,15 +9,39 @@ from PyQt5 import uic, QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import QThread, pyqtSignal
 
-form_main = uic.loadUiType("resource/mymain.ui")[0]        
-form_dialog = uic.loadUiType("resource/asset.ui")[0]
+form_main = uic.loadUiType("resource/mymain.ui")[0]
+form_dialog_asset = uic.loadUiType("resource/asset.ui")[0]
+form_dialog_algorithm = uic.loadUiType("resource/algorithm.ui")[0]
+form_dialog_rest = uic.loadUiType("resource/rest.ui")[0]
 
-#-----------------------------------------------------------------------
-class QDialogClass(QtWidgets.QDialog, form_dialog):
+
+# -----------------------------------------------------------------------
+class QDialogRest(QtWidgets.QDialog, form_dialog_rest):
     def __init__(self, parent=None):
         QtWidgets.QDialog.__init__(self, parent)
         self.setupUi(self)
-        self.DialogButton.clicked.connect(self.dialogColse)
+        self.DialogButton.clicked.connect(self.dialogClose)
+
+    def dialogClose(self):
+        self.close()
+
+
+# -----------------------------------------------------------------------
+class QDialogAlgorithm(QtWidgets.QDialog, form_dialog_algorithm):
+    def __init__(self, parent=None):
+        QtWidgets.QDialog.__init__(self, parent)
+        self.setupUi(self)
+        self.DialogButton.clicked.connect(self.dialogClose)
+
+    def dialogClose(self):
+        self.close()
+
+# -----------------------------------------------------------------------
+class QDialogAsset(QtWidgets.QDialog, form_dialog_asset):
+    def __init__(self, parent=None):
+        QtWidgets.QDialog.__init__(self, parent)
+        self.setupUi(self)
+        self.DialogButton.clicked.connect(self.dialogClose)
 
     def dialogAccount(self, apiKey, secKey):
         self.apiKey = apiKey
@@ -52,10 +76,11 @@ class QDialogClass(QtWidgets.QDialog, form_dialog):
         self.KNC_Price.setText(f"{KNC * KNC_Price:.2f}")
         self.TRX_Price.setText(f"{TRX * TRX_Price:.2f}")
 
-    def dialogColse(self):
+    def dialogClose(self):
         self.close()
 
-#-----------------------------------------------------------------------
+
+# -----------------------------------------------------------------------
 class MainUI(QMainWindow, form_main):
     start_trading = pyqtSignal()
     stop_trading = pyqtSignal()
@@ -77,9 +102,11 @@ class MainUI(QMainWindow, form_main):
         # 버튼과 버튼 함수 연결
         self.ToggleButton.clicked.connect(self.clickToggle)
         self.ToggleButton.resize(23, 23)
-        self.StartButton.clicked.connect(self.clickBtn)
+        self.LoginButton.clicked.connect(self.clickLogin)
+        self.StartButton.clicked.connect(self.clickStart)
         self.AccountButton.clicked.connect(self.clickAccount)
         self.AccountButton.setDisabled(True)
+        self.StartButton.setDisabled(True)
 
         self.btn_BTC.clicked.connect(lambda: self.clickCoin("BTC"))
         self.btn_ETH.clicked.connect(lambda: self.clickCoin("ETC"))
@@ -89,9 +116,9 @@ class MainUI(QMainWindow, form_main):
         self.btn_TRX.clicked.connect(lambda: self.clickCoin("TRX"))
 
         self.show()
-    
-    def clickBtn(self):
-        if self.StartButton.text() == "Start":
+
+    def clickLogin(self):
+        if self.LoginButton.text() == "Login":
             apiKey = self.sys_stat.access
             secKey = self.sys_stat.secret
 
@@ -103,12 +130,12 @@ class MainUI(QMainWindow, form_main):
             else:
                 self.textEdit.append("    << KEY로 로그인 성공.>>")
                 self.UI_Balance.def_inputkey(apiKey, secKey)
-                balances = upbit.get_balances() # self.ticker
+                balances = upbit.get_balances()  # self.ticker
                 balance = upbit.get_balance()
                 COIN = upbit.get_balance(ticker=f"KRW-{self.ticker}")
-                
+
                 # 이 if문빼도 되나??
-                if balances == {'error': {'message': '잘못된 엑세스 키입니다.', 'name': 'invalid_access_key'}} :
+                if balances == {'error': {'message': '잘못된 엑세스 키입니다.', 'name': 'invalid_access_key'}}:
                     # print(self.balance)
                     self.textEdit.append("▶ KEY값이 에러를 반환 했습니다.")
                     return
@@ -117,20 +144,23 @@ class MainUI(QMainWindow, form_main):
                     self.secKey.setDisabled(True)
                     self.apiKey.setDisabled(True)
                     self.AccountButton.setDisabled(False)
+                    self.StartButton.setDisabled(False)
+                    self.LoginButton.setDisabled(True)
                     self.textEdit.append("▶ 계좌 정보를 가져오는데 성공했습니다.")
                     self.textEdit.append(f"[ 보유 현금 : {balance:.4f} 원 ]")
                     self.textEdit.append(f"[ 보유 {self.ticker} : {COIN} {self.ticker} ]")
-                    self.textEdit.append(f"------ START / {self.ticker} ------")
-                    self.StartButton.setText("Stop")
-                    # 변동성 돌파 알고리즘 시작
-                    self.start_trading.emit()
 
+    def clickStart(self):
+        if self.StartButton.text() == "Start":
+            self.dialogAlgorithm_open()
+            self.start_trading.emit()  # 변동성 돌파 알고리즘 시작
+            self.textEdit.append(f"------ START / {self.ticker} ------")
+            self.StartButton.setText("Stop")
         else:
-            self.stop_trading.emit()
-            # 변동성 돌파 알고리즘 종료
+            self.dialogRest_open()
+            self.stop_trading.emit()  # 변동성 돌파 알고리즘 종료
             self.textEdit.append(f"------- STOP / {self.ticker} -------")
             self.StartButton.setText("Start")
-
 
     def clickToggle(self):
         if self.ToggleButton.text() == "◀":
@@ -152,17 +182,29 @@ class MainUI(QMainWindow, form_main):
 
     def clickAccount(self):
         if self.IdentityVerification:
-            self.dialog_open(self.apiKey.text(), self.secKey.text())
+            self.dialogAsset_open(self.sys_stat.access, self.sys_stat.secret)
 
-    def dialog_open(self, apiKey, secKey):
-        dialog = QDialogClass() # apiKey, secKey
-        dialog.setWindowTitle('Asset Management')
-        dialog.setFixedSize(400, 330)
-        dialog.dialogAccount(apiKey, secKey)
-        dialog.exec_()
+    def dialogAsset_open(self, apiKey, secKey):
+        dialogAsset = QDialogAsset()  # apiKey, secKey
+        dialogAsset.setWindowTitle('Asset Management')
+        dialogAsset.setFixedSize(400, 330)
+        dialogAsset.dialogAccount(apiKey, secKey)
+        dialogAsset.exec_()
+
+    def dialogAlgorithm_open(self):
+        dialogAlgorithm = QDialogAlgorithm()
+        dialogAlgorithm.setWindowTitle('Algorithm Select')
+        dialogAlgorithm.setFixedSize(400, 330)
+        dialogAlgorithm.exec_()
+
+    def dialogRest_open(self):
+        dialogRest = QDialogRest()
+        dialogRest.setWindowTitle('Rest Select')
+        dialogRest.setFixedSize(400, 330)
+        dialogRest.exec_()
 
     def clickCoin(self, coin_type):
-        kct = f"KRW-{coin_type}" # krw coin type
+        kct = f"KRW-{coin_type}"  # krw coin type
         self.sys_stat.coin_type = kct
 
         self.textEdit.append(f"-------- {coin_type} --------")
@@ -192,24 +234,22 @@ class MainUI(QMainWindow, form_main):
     def __del__():
         print("Sys: Deactivate MainUI")
 
-
-#-----------------------------------------------------------------------
-
-
-#-----------------------------------------------------------------------
+# -----------------------------------------------------------------------
 
 
-#-----------------------------------------------------------------------
+# -----------------------------------------------------------------------
 
 
-#-----------------------------------------------------------------------
+# -----------------------------------------------------------------------
 
 
-#-----------------------------------------------------------------------
+# -----------------------------------------------------------------------
 
 
-#-----------------------------------------------------------------------
+# -----------------------------------------------------------------------
 
 
+# -----------------------------------------------------------------------
 
-#-----------------------------------------------------------------------
+
+# -----------------------------------------------------------------------
