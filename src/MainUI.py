@@ -21,6 +21,14 @@ class QDialogRest(QtWidgets.QDialog, form_dialog_rest):
         QtWidgets.QDialog.__init__(self, parent)
         self.setupUi(self)
         self.DialogButton.clicked.connect(self.dialogClose)
+        self.SoldButton.clicked.connect(self.clickSold)
+        self.LeaveButton.clicked.connect(self.clickLeave)
+
+    def clickSold(self):
+        self.close()
+
+    def clickLeave(self):
+        self.close()
 
     def dialogClose(self):
         self.close()
@@ -32,9 +40,22 @@ class QDialogAlgorithm(QtWidgets.QDialog, form_dialog_algorithm):
         QtWidgets.QDialog.__init__(self, parent)
         self.setupUi(self)
         self.DialogButton.clicked.connect(self.dialogClose)
+        self.Algorithm1Button.clicked.connect(self.clickAlgorithm1)
+        self.Algorithm2Button.clicked.connect(self.clickAlgorithm2)
+        self.Algorithm3Button.clicked.connect(self.clickAlgorithm3)
+
+    def clickAlgorithm1(self):
+        self.close()
+
+    def clickAlgorithm2(self):
+        self.close()
+
+    def clickAlgorithm3(self):
+        self.close()
 
     def dialogClose(self):
         self.close()
+
 
 # -----------------------------------------------------------------------
 class QDialogAsset(QtWidgets.QDialog, form_dialog_asset):
@@ -233,23 +254,5 @@ class MainUI(QMainWindow, form_main):
 
     def __del__():
         print("Sys: Deactivate MainUI")
-
-# -----------------------------------------------------------------------
-
-
-# -----------------------------------------------------------------------
-
-
-# -----------------------------------------------------------------------
-
-
-# -----------------------------------------------------------------------
-
-
-# -----------------------------------------------------------------------
-
-
-# -----------------------------------------------------------------------
-
 
 # -----------------------------------------------------------------------
