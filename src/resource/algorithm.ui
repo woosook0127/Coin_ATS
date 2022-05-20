@@ -63,15 +63,8 @@
         <property name="bottomMargin">
          <number>6</number>
         </property>
-        <item row="3" column="1">
-         <widget class="QPushButton" name="pushButton_2">
-          <property name="text">
-           <string>Algorithm2</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <spacer name="horizontalSpacer_3">
+        <item row="1" column="2">
+         <spacer name="horizontalSpacer_4">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -83,47 +76,21 @@
           </property>
          </spacer>
         </item>
-        <item row="1" column="1">
-         <widget class="QPushButton" name="pushButton">
-          <property name="minimumSize">
-           <size>
-            <width>200</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Algorithm1</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <spacer name="horizontalSpacer_5">
+        <item row="0" column="1">
+         <spacer name="verticalSpacer_3">
           <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+           <enum>Qt::Vertical</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>40</width>
-            <height>20</height>
+            <width>20</width>
+            <height>40</height>
            </size>
           </property>
          </spacer>
         </item>
         <item row="3" column="2">
          <spacer name="horizontalSpacer_6">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="1" column="2">
-         <spacer name="horizontalSpacer_4">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -148,6 +115,39 @@
           </property>
          </spacer>
         </item>
+        <item row="1" column="1">
+         <widget class="QPushButton" name="Algorithm1Button">
+          <property name="minimumSize">
+           <size>
+            <width>200</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Algorithm1</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <spacer name="horizontalSpacer_5">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="3" column="1">
+         <widget class="QPushButton" name="Algorithm2Button">
+          <property name="text">
+           <string>Algorithm2</string>
+          </property>
+         </widget>
+        </item>
         <item row="2" column="1">
          <spacer name="verticalSpacer">
           <property name="orientation">
@@ -161,8 +161,28 @@
           </property>
          </spacer>
         </item>
-        <item row="0" column="1">
-         <spacer name="verticalSpacer_3">
+        <item row="1" column="0">
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="5" column="1">
+         <widget class="QPushButton" name="Algorithm3Button">
+          <property name="text">
+           <string>Algorithm3</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="1">
+         <spacer name="verticalSpacer_4">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
