@@ -118,19 +118,29 @@ class MainUI(QMainWindow, form_main):
         self.IdentityVerification = False
         self.setWindowTitle("Auto Trading System Profit 5%")
         self.textEdit.append("▶ 거래내역")
-        self.setFixedSize(1480, 780)
+        self.setFixedSize(1480, 800)
 
         # 버튼과 버튼 함수 연결
         self.ToggleButton.clicked.connect(self.clickToggle)
         self.ToggleButton.resize(23, 23)
+        self.btn_toggle.clicked.connect(self.clickToggleCandle)
+        self.btn_toggle.resize(23, 23)
         self.LoginButton.clicked.connect(self.clickLogin)
         self.StartButton.clicked.connect(self.clickStart)
         self.AccountButton.clicked.connect(self.clickAccount)
         self.AccountButton.setDisabled(True)
         self.StartButton.setDisabled(True)
 
+        self.btn_min1.clicked.connect(lambda: self.CandleButton('minute1'))
+        self.btn_min15.clicked.connect(lambda: self.CandleButton('minute15'))
+        self.btn_hour1.clicked.connect(lambda: self.CandleButton('minute60'))
+        self.btn_hour4.clicked.connect(lambda: self.CandleButton('minute240'))
+        self.btn_day1.clicked.connect(lambda: self.CandleButton('day'))
+        self.btn_week1.clicked.connect(lambda: self.CandleButton('week'))
+        self.btn_month1.clicked.connect(lambda: self.CandleButton('month'))
+
         self.btn_BTC.clicked.connect(lambda: self.clickCoin("BTC"))
-        self.btn_ETH.clicked.connect(lambda: self.clickCoin("ETC"))
+        self.btn_ETH.clicked.connect(lambda: self.clickCoin("ETH"))
         self.btn_STX.clicked.connect(lambda: self.clickCoin("STX"))
         self.btn_SOL.clicked.connect(lambda: self.clickCoin("SOL"))
         self.btn_KNC.clicked.connect(lambda: self.clickCoin("KNC"))
@@ -182,6 +192,26 @@ class MainUI(QMainWindow, form_main):
             self.stop_trading.emit()  # 변동성 돌파 알고리즘 종료
             self.textEdit.append(f"------- STOP / {self.ticker} -------")
             self.StartButton.setText("Start")
+
+    def clickToggleCandle(self):
+        if self.btn_toggle.text() == "◀":
+            self.btn_hour1.hide()
+            self.btn_hour4.hide()
+            self.btn_min1.hide()
+            self.btn_min15.hide()
+            self.btn_day1.hide()
+            self.btn_week1.hide()
+            self.btn_month1.hide()
+            self.btn_toggle.setText("▶")
+        else:
+            self.btn_hour1.show()
+            self.btn_hour4.show()
+            self.btn_min1.show()
+            self.btn_min15.show()
+            self.btn_day1.show()
+            self.btn_week1.show()
+            self.btn_month1.show()
+            self.btn_toggle.setText("◀")
 
     def clickToggle(self):
         if self.ToggleButton.text() == "◀":
@@ -240,6 +270,10 @@ class MainUI(QMainWindow, form_main):
         self.UI_CandleChart.updateTicker(kct)
         self.UI_CandleChart.redrawChart(kct)
         self.UI_Overview.fill24Data(0, 0, math.trunc(pyupbit.get_current_price(kct)), 0, 0, 0, 0, 0)
+
+    def CandleButton(self, interval):
+        self.UI_CandleChart.interval = interval
+        self.UI_CandleChart.updateInterval(interval)
 
     def receiveTradingSignal(self, time, type, amount):
         self.textEdit.append(f"[{time}] {type} : {amount}")
