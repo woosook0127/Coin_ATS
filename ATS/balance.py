@@ -1,4 +1,4 @@
-import sys, os
+import sys
 from PyQt5.QtGui import QPalette, QBrush, QPixmap
 from PyQt5 import uic
 from PyQt5.QtWidgets import *
@@ -15,8 +15,6 @@ class Worker(QThread):
 
     def __init__(self, apikey, seckey):
         super().__init__()
-        print(f"balance worker pid:{int(QThread.currentThreadId())}")
-
         self.apikey = apikey
         self.seckey = seckey
         self.alive = True
@@ -46,7 +44,6 @@ class Worker(QThread):
 class BalanceWidget(QWidget):
     def __init__(self, parent=None, ticker="KRW-BTC"):
         super().__init__(parent)
-        print(f"balance widget pid:{int(QThread.currentThreadId())}")
         self.sys_stat = SystemStatus()
         uic.loadUi("resource/balance.ui", self)
         

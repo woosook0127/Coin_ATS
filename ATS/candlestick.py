@@ -7,7 +7,6 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtCore import *
 import pyupbit
 import time
-import os
 from pandas import Series
 
 
@@ -158,7 +157,6 @@ class candleWidget(QWidget):
 
     def closeEvent(self, event):
         self.chart.close()
-        self.exit()
 
 
     @pyqtSlot(float)

@@ -1,4 +1,4 @@
-import sys, os
+import sys
 import time
 import pyupbit
 from PyQt5 import uic
@@ -11,7 +11,6 @@ class OrderbookWorker(QThread):
 
     def __init__(self, ticker):
         super().__init__()
-        print(f"orderbook worker pid: {os.getpid()}")
         self.ticker = ticker
         self.alive = True
 
@@ -30,7 +29,6 @@ class OrderbookWorker(QThread):
 class OrderbookWidget(QWidget):
     def __init__(self, parent=None, ticker="KRW-BTC"):
         super().__init__(parent)
-        print(f"orderbook widget pid: {os.getpid()}")
         uic.loadUi("resource/orderbook.ui", self)
         self.ticker = ticker
 

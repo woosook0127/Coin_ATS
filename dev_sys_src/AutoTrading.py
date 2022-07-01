@@ -19,9 +19,18 @@ class AutoTrading(QThread):
         self.access = self.sys_stat.access
         self.secret = self.sys_stat.secret
         self.coin_type = self.sys_stat.coin_type
+        #self.my_coin = self.upbit.get_balance(self.coin_type)
         self.k_value = self.sys_stat.coin_type
         self.k_term = self.sys_stat.k_term 
         self.buying_price = self.sys_stat.buying_price
+        self.is_activating = False 
+
+        print("Sys: Get start Login")
+        self.upbit = pyupbit.Upbit(self.access, self.secret) # log-in
+        self.my_coin = self.upbit.get_balance(self.coin_type)
+
+
+
 
     # 매수 목표가 조회 - 변동성 돌파 전략
     def get_target_price(self, coin_type, k):  
@@ -66,11 +75,12 @@ class AutoTrading(QThread):
         df = pd.DataFrame([[0,0,0]], columns=['Profit_rate', 'MDD%', 'k-value'])
 
         for i in tqdm(np.arange(0, 0.5, 0.001), desc='Progress', mininterval=0.1):
-            profit, mdd = self.back_testing(coin_type, i, term, False)
-            max_profit = df['Profit_rate'].max()
+            if self.is_activating:
+                profit, mdd = self.back_testing(coin_type, i, term, False)
+                max_profit = df['Profit_rate'].max()
             
-            if profit >= max_profit:
-                df = df.append(pd.Series([profit, mdd, i], index=df.columns), ignore_index=True)
+                if profit >= max_profit:
+                    df = df.append(pd.Series([profit, mdd, i], index=df.columns), ignore_index=True)
 
         filter = df['Profit_rate'] == df['Profit_rate'].max()
         hyper_k = df[filter].iloc[0,2]
@@ -86,14 +96,14 @@ class AutoTrading(QThread):
 #----------------------------------------------------------------------
     def run(self):
         print("AutoTrading RunnIng")
+        self.is_activating = True
         self.update_k(self.coin_type)
         self.activate()
 
     def activate(self):
         print("Sys: Activating ...")
-        print("Sys: Get start Login")
-        self.upbit = pyupbit.Upbit(self.access, self.secret) # log-in
-        
+        #self.upbit = pyupbit.Upbit(self.access, self.secret) # log-in
+         
         # 자동매매 시작
         print("Sys: Trading activated")
         while True:
@@ -101,7 +111,8 @@ class AutoTrading(QThread):
                 now = datetime.datetime.now()
                 start_time = self.get_start_time(self.coin_type)
                 end_time = start_time + datetime.timedelta(days=1)
-                self.my_coin = self.upbit.get_balance(self.coin_type)
+                #self.my_coin = self.upbit.get_balance(self.coin_type)
+                self.sys_stat.my_coin = self.my_coin
                 apr_price = self.my_coin * pyupbit.get_current_price(self.coin_type) # appraised price
 
                 # Trading time
@@ -133,6 +144,7 @@ class AutoTrading(QThread):
 
     def deactivate(self):
         print("Sys: Deactivate trading")
+        self.is_activating = False
         try:
             self.upbit.sell_market_order(self.coin_type, self.my_coin*0.9995)
         except Exception as e:

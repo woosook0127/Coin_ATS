@@ -52,7 +52,6 @@ class OverviewWidget(QWidget):
 
     def closeEvent(self, event):
         self.ovw.close()
-        self.exit()
 
     def fill24Data(self, chgRate, volumePower, currPrice, volume, highPrice, value, lowPrice, PrevClosePrice):
         self.label_1.setText(f"{currPrice:,}")
