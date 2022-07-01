@@ -23,8 +23,9 @@ class main(QWidget):
         self.main_ui.show()
         
     def closeAll(self):
-        time.sleep(2)
-        os.kill(os.getpid(), 9)
+        self.main_ui.close()
+        os.system("ps -aux | grep main.py | awk '{print $2}' | xargs kill -9 > res.out 2>&1")
+        #os.kill(os.getpid(), 9)
 #-----------------------------------------------------------------------
 if __name__ == "__main__":
     # Main process

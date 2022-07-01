@@ -1,7 +1,7 @@
 #----------------------------------------------------------------------
 import math
 import pyupbit
-import time, os, sys
+import time, os, sys, signal
 
 from PyQt5 import uic, QtWidgets
 from PyQt5.QtWidgets import *
@@ -186,15 +186,20 @@ class MainUI(QMainWindow, form_main):
         self.UI_CandleChart.closeEvent(event)
         self.UI_Balance.closeEvent(event)
         print("Sys: Deactivate MainUI")
+        self.close()
+        #signal.pthread_kill(int(QThread.currentThreadId()), signal.SIGKILL)
         self.stop_system.emit()
+        print("MainUI Close")
         
 #-----------------------------------------------------------------------
+'''
 if __name__ == "__main__":
     from SystemStatus import SystemStatus
     app = QApplication(sys.argv)
     mw = MainUI(SystemStatus())
     mw.show()
     sys.exit(app.exec_())
+'''
 #-----------------------------------------------------------------------
 
 
