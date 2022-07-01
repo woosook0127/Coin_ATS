@@ -105,7 +105,8 @@ class QDialogAsset(QtWidgets.QDialog, form_dialog_asset):
 class MainUI(QMainWindow, form_main):
     start_trading = pyqtSignal()
     stop_trading = pyqtSignal()
-
+    stop_system = pyqtSignal()
+    
     def __init__(self, sys_stat):
         print("Init MainUI")
         super().__init__()
@@ -284,8 +285,12 @@ class MainUI(QMainWindow, form_main):
         self.UI_HighChart.closeEvent(event)
         self.UI_CandleChart.closeEvent(event)
         self.UI_Balance.closeEvent(event)
+        print("Sys: Deactivate MainUI")
         self.close()
-
+        #signal.pthread_kill(int(QThread.currentThreadId()), signal.SIGKILL)
+        self.stop_system.emit()
+        print("MainUI Close")
+        
     def __del__():
         print("Sys: Deactivate MainUI")
 
