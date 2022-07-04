@@ -62,7 +62,6 @@ class QDialogAsset(QtWidgets.QDialog, form_dialog_asset):
         self.DialogButton.clicked.connect(self.dialogClose)
 
     def dialogAccount(self, apiKey, secKey):
-        print("dialogAccount function run")
         self.apiKey = apiKey
         self.secKey = secKey
 
@@ -106,7 +105,7 @@ class MainUI(QMainWindow, form_main):
     stop_system = pyqtSignal()
 
     def __init__(self, sys_stat):
-        print("Init MainUI")
+        print("[SYSTEM] Init MainUI")
         super(MainUI, self).__init__()
         self.sys_stat = sys_stat
 
@@ -284,13 +283,11 @@ class MainUI(QMainWindow, form_main):
         self.UI_CandleChart.closeEvent(event)
         self.UI_Balance.closeEvent(event)
         
-        print("[SYSTEM] Deactivate MainUI")
+        print("[SYSTEM] Close MainUI")
         self.close()
         #signal.pthread_kill(int(QThread.currentThreadId()), signal.SIGKILL)
         self.stop_system.emit()
         print("[SYSTEM] MainUI Closed")
         
-    def __del__():
-        print("[SYSTEM]: Deactivate MainUI")
 
 

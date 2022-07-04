@@ -8,23 +8,23 @@ import numpy as np
 import warnings
 
 from PyQt5.QtCore import *
-
+import pdb
 #----------------------------------------------------------------------
 class AutoTrading(QThread):
     def __init__(self, sys_stat):
         warnings.filterwarnings(action='ignore')
         super().__init__()
-        print("Initializition...")
+        print("[SYSTEM] Init AutoTrading")
         self.sys_stat = sys_stat
         self.access = self.sys_stat.access
         self.secret = self.sys_stat.secret
         self.coin_type = self.sys_stat.coin_type
         #self.my_coin = self.upbit.get_balance(self.coin_type)
-        self.k_value = self.sys_stat.coin_type
+        self.k_value = self.sys_stat.k_value
         self.k_term = self.sys_stat.k_term 
         self.buying_price = self.sys_stat.buying_price
         self.is_activating = False 
-        print("SYS: Get start Login")
+        print("[SYSTEM] Start Login")
 
     # 매수 목표가 조회 - 변동성 돌파 전략
     def get_target_price(self, coin_type, k):  
@@ -57,9 +57,8 @@ class AutoTrading(QThread):
             if (prt):
                 print_str = f"{coin_type} {term}일간 수익률: {profit}%, MDD: {df['dd'].max()}"
                 print(print_str)
-
         except Exception as e:
-            print(e)
+            print(f"[EXCEPTION] {e}")
             time.sleep(0.1)
             return 7210, 7210
         return profit, df['dd'].max()
@@ -68,7 +67,7 @@ class AutoTrading(QThread):
         # k value의 최적값을 찾기 위해 backtesting하며 수익률을 확인한다.
         df = pd.DataFrame([[0,0,0]], columns=['Profit_rate', 'MDD%', 'k-value'])
         
-        for i in tqdm(np.arange(0, 0.5, 0.001), desc='Progress', mininterval=0.1):
+        for i in tqdm(np.arange(0, 0.5, 0.001), desc='[SYSTEM] Progress', mininterval=0.1):
             if not self.is_activating:
                 break
             else:
@@ -83,29 +82,26 @@ class AutoTrading(QThread):
         return hyper_k
 
     def update_k(self, coin_type):
-        print(f"SYS: k-value updating...: {self.k_value}")
+        print(f"[SYSYEM] Update k-value: {self.k_value}")
         self.k_value = self.find_hyper_k(coin_type, self.k_term)
         self.sys_stat.k_value = self.k_value
-        print(f"SYS: k-value updated !!!: {self.k_value}")
+        print(f"[SYSTEM] k-value Updated: {self.k_value}")
 
 #----------------------------------------------------------------------
     def run(self):
         self.upbit = pyupbit.Upbit(self.access, self.secret) # log-in
         self.my_coin = self.upbit.get_balance(self.coin_type)
-        print("AutoTrading RunnIng")
         self.is_activating = True
         self.update_k(self.coin_type)
         self.activate()
 
     def activate(self):
         if self.is_activating:
-            print("Sys: Activating ...")
             #self.upbit = pyupbit.Upbit(self.access, self.secret) # log-in
-         
             # 자동매매 시작
-            print("Sys: Trading activated")
+            print("[SYSTEM]: Start AutoTrading")
         else:
-            return
+            return 
         while True:
             try:
                 now = datetime.datetime.now()
@@ -143,14 +139,14 @@ class AutoTrading(QThread):
                 time.sleep(0.1)
 
     def deactivate(self):
-        print("SYS: Deactivate trading")
+        print("[SYSTEM] Stop Trading")
         self.is_activating = False
         try:
-            if self.my_coin != None: 
+            if self.my_coin != None:
                 self.upbit.sell_market_order(self.coin_type, self.my_coin*0.9995)
 
         except Exception as e:
-            print(f"Exception: {e}")
+            print(f"[EXECPTION] {e}")
             time.sleep(0.1)
 
     def __del__(self):

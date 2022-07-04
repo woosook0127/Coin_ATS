@@ -31,7 +31,6 @@ class main(QWidget):
 if __name__ == "__main__":
     # Main process
     app = QApplication(sys.argv)
-
     main()
     sys.exit(app.exec_())    
 #-----------------------------------------------------------------------
