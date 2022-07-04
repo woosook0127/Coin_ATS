@@ -1,4 +1,4 @@
-import sys, os
+import sys
 from PyQt5.QtGui import QPalette, QBrush, QPixmap
 from PyQt5 import uic
 from PyQt5.QtWidgets import *
@@ -15,7 +15,6 @@ class Worker(QThread):
 
     def __init__(self, apikey, seckey):
         super().__init__()
-
         self.apikey = apikey
         self.seckey = seckey
         self.alive = True

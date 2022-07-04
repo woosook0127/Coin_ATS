@@ -1,9 +1,6 @@
-# ----------------------------------------------------------------------
-import sys
-import time
-import datetime
 import math
 import pyupbit
+import time, os, sys, signal, datetime
 
 from PyQt5 import uic, QtWidgets
 from PyQt5.QtWidgets import *
@@ -65,6 +62,7 @@ class QDialogAsset(QtWidgets.QDialog, form_dialog_asset):
         self.DialogButton.clicked.connect(self.dialogClose)
 
     def dialogAccount(self, apiKey, secKey):
+        print("dialogAccount function run")
         self.apiKey = apiKey
         self.secKey = secKey
 
@@ -106,10 +104,10 @@ class MainUI(QMainWindow, form_main):
     start_trading = pyqtSignal()
     stop_trading = pyqtSignal()
     stop_system = pyqtSignal()
-    
+
     def __init__(self, sys_stat):
         print("Init MainUI")
-        super().__init__()
+        super(MainUI, self).__init__()
         self.sys_stat = sys_stat
 
         # UI 세팅
@@ -285,13 +283,14 @@ class MainUI(QMainWindow, form_main):
         self.UI_HighChart.closeEvent(event)
         self.UI_CandleChart.closeEvent(event)
         self.UI_Balance.closeEvent(event)
-        print("Sys: Deactivate MainUI")
+        
+        print("[SYSTEM] Deactivate MainUI")
         self.close()
         #signal.pthread_kill(int(QThread.currentThreadId()), signal.SIGKILL)
         self.stop_system.emit()
-        print("MainUI Close")
+        print("[SYSTEM] MainUI Closed")
         
     def __del__():
-        print("Sys: Deactivate MainUI")
+        print("[SYSTEM]: Deactivate MainUI")
 
-# -----------------------------------------------------------------------
+

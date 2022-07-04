@@ -1,4 +1,4 @@
-import sys, os
+import sys
 import time
 import pyupbit
 from PyQt5 import uic
