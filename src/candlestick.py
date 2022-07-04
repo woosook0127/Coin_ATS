@@ -30,6 +30,7 @@ class candleWidget(QWidget):
         super().__init__(parent)
         uic.loadUi("resource/candle.ui",self)
         self.ticker = ticker
+        self.interval = 'minute1'
 
         # 쓰레드 초기화
         self.worker = Worker(ticker)
@@ -43,7 +44,7 @@ class candleWidget(QWidget):
 
         # 위젯 사이즈
         self.setMinimumSize(750, 350)
-        df = pyupbit.get_ohlcv(self.ticker, interval='minute1', count=80)
+        df = pyupbit.get_ohlcv(self.ticker, interval=self.interval, count=80)
 
         # 캔들스틱 초기화
         self.series = QCandlestickSeries()
@@ -106,7 +107,7 @@ class candleWidget(QWidget):
 
         # 위젯 사이즈
         self.setMinimumSize(750, 350)
-        df = pyupbit.get_ohlcv(self.ticker, interval='minute1', count=80)
+        df = pyupbit.get_ohlcv(self.ticker, interval=self.interval, count=80)
 
         # 캔들스틱 초기화
         self.series = QCandlestickSeries()
@@ -155,6 +156,10 @@ class candleWidget(QWidget):
         chart_view = QChartView(self.chart)
         chart_view.setRenderHint(QPainter.Antialiasing)
         self.candleView.setChart(self.chart)
+
+    def updateInterval(self, interval):
+        self.interval = interval
+        self.redrawChart(self.ticker)
 
     def closeEvent(self, event):
         self.chart.close()

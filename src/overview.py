@@ -54,6 +54,7 @@ class OverviewWidget(QWidget):
         self.ovw.close()
 
     def fill24Data(self, chgRate, volumePower, currPrice, volume, highPrice, value, lowPrice, PrevClosePrice):
+        self.label.setText(f"{self.ticker}")
         self.label_1.setText(f"{currPrice:,}")
         self.label_2.setText(f"{chgRate*100:+.2f} %")
         self.label_4.setText(f"{volume:.2f} {self.ticker}")
@@ -68,7 +69,7 @@ class OverviewWidget(QWidget):
         if '-' in self.label_2.text():
             self.label_1.setStyleSheet("color:blue;")
             self.label_2.setStyleSheet("background-color:blue;color:white")
-        else:
+        else :
             self.label_1.setStyleSheet("color:red;")
             self.label_2.setStyleSheet("background-color:red;color:white")
 
