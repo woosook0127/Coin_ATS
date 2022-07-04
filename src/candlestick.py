@@ -158,7 +158,6 @@ class candleWidget(QWidget):
 
     def closeEvent(self, event):
         self.chart.close()
-        self.exit()
 
 
     @pyqtSlot(float)

@@ -8,10 +8,9 @@ class SystemStatus():
         self.k_term = 14            # default [days]
         self.buying_price = -1      # defatlt [buying price of coin]
 
+        self.my_coin = None
         self.activate_trading = False 
-
-    def __del__():
-        print("Sys: Deactivate SystemStatus")
+    
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
