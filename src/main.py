@@ -22,7 +22,6 @@ class main(QWidget):
         self.main_ui.stop_system.connect(lambda: self.closeAll())
         self.main_ui.show()
         
-
     def closeAll(self):
         self.main_ui.close()
         os.system("ps -aux | grep main.py | awk '{print $2}' | xargs kill -9 > res.out 2>&1")
