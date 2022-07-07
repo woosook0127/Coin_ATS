@@ -7,6 +7,7 @@ from PyQt5.QtCore import *
 from SystemStatus import SystemStatus
 from AutoTrading import AutoTrading
 from MainUI import MainUI
+from TradingAlgorithms import TradingAlgorithms
 
 #-----------------------------------------------------------------------
 class main(QWidget):
@@ -14,8 +15,9 @@ class main(QWidget):
         super(main, self).__init__()
 
         self.sys_stat = SystemStatus()
+        self.trading_algs = TradingAlgorithms(self.sys_stat)
         self.main_ui = MainUI(self.sys_stat)
-        self.auto_trading = AutoTrading(self.sys_stat)
+        self.auto_trading = AutoTrading(self.sys_stat, self.trading_algs)
 
         self.main_ui.start_trading.connect(lambda: self.auto_trading.start())
         self.main_ui.stop_trading.connect(lambda: self.auto_trading.deactivate())

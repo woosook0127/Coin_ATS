@@ -1,4 +1,5 @@
 import math
+from tkinter import NONE
 import pyupbit
 import time, os, sys, signal, datetime
 
@@ -33,13 +34,17 @@ class QDialogRest(QtWidgets.QDialog, form_dialog_rest):
 
 # -----------------------------------------------------------------------
 class QDialogAlgorithm(QtWidgets.QDialog, form_dialog_algorithm):
-    def __init__(self, parent=None):
-        QtWidgets.QDialog.__init__(self, parent)
+    def __init__(self, parent):
+        QtWidgets.QDialog.__init__(self, None)
         self.setupUi(self)
+        self.parent = parent
         self.DialogButton.clicked.connect(self.dialogClose)
         self.Algorithm1Button.clicked.connect(self.clickAlgorithm1)
+        self.Algorithm1Button.clicked.connect(self.parent.algorithm_selection_1)
         self.Algorithm2Button.clicked.connect(self.clickAlgorithm2)
+        self.Algorithm2Button.clicked.connect(self.parent.algorithm_selection_2)
         self.Algorithm3Button.clicked.connect(self.clickAlgorithm3)
+        self.Algorithm3Button.clicked.connect(self.parent.algorithm_selection_3)
 
     def clickAlgorithm1(self):
         self.close()
@@ -241,7 +246,7 @@ class MainUI(QMainWindow, form_main):
         dialogAsset.exec_()
 
     def dialogAlgorithm_open(self):
-        dialogAlgorithm = QDialogAlgorithm()
+        dialogAlgorithm = QDialogAlgorithm(self)
         dialogAlgorithm.setWindowTitle('Algorithm Select')
         dialogAlgorithm.setFixedSize(400, 330)
         dialogAlgorithm.exec_()
@@ -275,6 +280,15 @@ class MainUI(QMainWindow, form_main):
 
     def receiveTradingSignal(self, time, type, amount):
         self.textEdit.append(f"[{time}] {type} : {amount}")
+
+    def algorithm_selection_1(self):
+        self.sys_stat.algorithm = 0
+
+    def algorithm_selection_2(self):
+        self.sys_stat.algorithm = 1
+
+    def algorithm_selection_3(self):
+        self.sys_stat.algorithm = 2
 
     def closeEvent(self, event):
         self.UI_Overview.closeEvent(event)

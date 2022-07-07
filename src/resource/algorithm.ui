@@ -124,7 +124,7 @@
            </size>
           </property>
           <property name="text">
-           <string>Algorithm1</string>
+           <string>BreakThrough</string>
           </property>
          </widget>
         </item>
@@ -144,7 +144,7 @@
         <item row="3" column="1">
          <widget class="QPushButton" name="Algorithm2Button">
           <property name="text">
-           <string>Algorithm2</string>
+           <string>RangeCompare</string>
           </property>
          </widget>
         </item>
@@ -177,7 +177,7 @@
         <item row="5" column="1">
          <widget class="QPushButton" name="Algorithm3Button">
           <property name="text">
-           <string>Algorithm3</string>
+           <string>TargetPriceChange</string>
           </property>
          </widget>
         </item>

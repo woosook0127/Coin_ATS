@@ -10,7 +10,7 @@ class SystemStatus():
 
         self.my_coin = None
         self.activate_trading = False 
-    
-#-----------------------------------------------------------------------
+        self.is_activating = False
+        self.algorithm = -1
 
 #-----------------------------------------------------------------------
