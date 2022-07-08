@@ -8,7 +8,6 @@ from volatility import *
 import pyupbit
 import math
 
-
 class VolatilityWorker(QThread):
     tradingSent = pyqtSignal(str, str, str)
 
