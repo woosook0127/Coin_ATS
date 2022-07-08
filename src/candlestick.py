@@ -77,7 +77,21 @@ class candleWidget(QWidget):
 
         # 축 설정
         axis_x = QDateTimeAxis()
-        axis_x.setFormat("hh:mm:ss")
+        if self.interval == 'minute1':
+            axis_x.setFormat("hh:mm:ss")
+        if self.interval == 'minute15':
+            axis_x.setFormat("hh:mm:ss")
+        if self.interval == 'minute60':
+            axis_x.setFormat("hh:mm:ss")
+        if self.interval == 'minute240':
+            axis_x.setFormat("hh:mm:ss")
+        if self.interval == 'day':
+            axis_x.setFormat("yyyy-MM-dd")
+        if self.interval == 'week':
+            axis_x.setFormat("yyyy-MM-dd")
+        if self.interval == 'month':
+            axis_x.setFormat("yyyy-MM-dd")
+
         self.chart.addAxis(axis_x, Qt.AlignBottom)
         self.series.attachAxis(axis_x)
 
@@ -140,7 +154,20 @@ class candleWidget(QWidget):
 
         # 축 설정
         axis_x = QDateTimeAxis()
-        axis_x.setFormat("hh:mm:ss")
+        if self.interval == 'minute1':
+            axis_x.setFormat("hh:mm:ss")
+        if self.interval == 'minute15':
+            axis_x.setFormat("hh:mm:ss")
+        if self.interval == 'minute60':
+            axis_x.setFormat("hh:mm:ss")
+        if self.interval == 'minute240':
+            axis_x.setFormat("hh:mm:ss")
+        if self.interval == 'day':
+            axis_x.setFormat("yyyy-MM-dd")
+        if self.interval == 'week':
+            axis_x.setFormat("yyyy-MM-dd")
+        if self.interval == 'month':
+            axis_x.setFormat("yyyy-MM-dd")
         self.chart.addAxis(axis_x, Qt.AlignBottom)
         self.series.attachAxis(axis_x)
 
