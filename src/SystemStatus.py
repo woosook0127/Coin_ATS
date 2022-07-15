@@ -1,8 +1,8 @@
 #-----------------------------------------------------------------------
 class SystemStatus():
     def __init__(self):
-        self.access = "xTgB4NarGyQ1hYbkFRtMGVJhskdVTsw0mRlzdyES"
-        self.secret = "1xk3iwoQgqyCO7uQ1ZE9Ce0fyAFrFm0w3FOUDNOr"
+        self.access = ""
+        self.secret = ""
         self.coin_type = "DEFAULT"  # default [KRW-???]
         self.k_value = -1           # default [0-1]
         self.k_term = 14            # default [days]

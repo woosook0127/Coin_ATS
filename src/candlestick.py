@@ -84,7 +84,7 @@ class candleWidget(QWidget):
         if self.interval == 'minute60':
             axis_x.setFormat("hh:mm:ss")
         if self.interval == 'minute240':
-            axis_x.setFormat("hh:mm:ss")
+            axis_x.setFormat("yyyy-MM-dd")
         if self.interval == 'day':
             axis_x.setFormat("yyyy-MM-dd")
         if self.interval == 'week':
@@ -161,7 +161,7 @@ class candleWidget(QWidget):
         if self.interval == 'minute60':
             axis_x.setFormat("hh:mm:ss")
         if self.interval == 'minute240':
-            axis_x.setFormat("hh:mm:ss")
+            axis_x.setFormat("yyyy-MM-dd")
         if self.interval == 'day':
             axis_x.setFormat("yyyy-MM-dd")
         if self.interval == 'week':

@@ -148,14 +148,19 @@ class MainUI(QMainWindow, form_main):
 
     def clickLogin(self):
         if self.LoginButton.text() == "Login":
+            self.sys_stat.access = self.apiKey.text()
+            self.sys_stat.secret = self.secKey.text()
+
             apiKey = self.sys_stat.access
             secKey = self.sys_stat.secret
-
-            self.textEdit.append("▶ 계좌 정보를 불러오는 중입니다.")
             upbit = pyupbit.Upbit(apiKey, secKey)
-            if upbit == None:
-                self.textEdit.append("    << KEY가 올바르지 않습니다.>>")
+            balances = upbit.get_balances()
+            self.textEdit.append("▶ 계좌 정보를 불러오는 중입니다.")
+
+            if balances == {'error': {'message': '잘못된 엑세스 키입니다.', 'name': 'invalid_access_key'}}:  # print(self.balance)
+                self.textEdit.append("▶ KEY값이 에러를 반환 했습니다.")
                 return
+
             else:
                 self.textEdit.append("    << KEY로 로그인 성공.>>")
                 self.UI_Balance.def_inputkey(apiKey, secKey)
@@ -163,7 +168,6 @@ class MainUI(QMainWindow, form_main):
                 balance = upbit.get_balance()
                 COIN = upbit.get_balance(ticker=f"KRW-{self.ticker}")
 
-                # 이 if문빼도 되나??
                 if balances == {'error': {'message': '잘못된 엑세스 키입니다.', 'name': 'invalid_access_key'}}:
                     # print(self.balance)
                     self.textEdit.append("▶ KEY값이 에러를 반환 했습니다.")
