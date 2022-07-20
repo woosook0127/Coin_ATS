@@ -36,31 +36,38 @@ if __name__ == '__main__':
     secret_key = 'qkAnthvqDvx6qChrXpNS9dPIdWuaUIxif6bvxYLo'
     up = UpbitKey(access_key, secret_key)
 
+    while 1:
+        # price = pyupbit.get_ohlcv("KRW-BTC", "minute3",to='20210101')
+        # time.sleep(10)
+        # pprint(price)
 
-    price = pyupbit.get_ohlcv("KRW-BTC", "minute1")
-    time.sleep(5)
-    pprint(price)
+        # markets = up.request_public('market/all', None)
+        # markets = [m['market'] for m in markets]
+        res = up.request_public('candles/minutes/1/', {'market': "KRW-BTC", 'count': '200'})
+        print(res)
+        data = list(res[0].values())[::]
+        time.sleep(60)
 
-    # markets = up.request_public('market/all', None)
-    # markets = [m['market'] for m in markets]
-    res = up.request_public('candles/minutes/1/', {'market': "KRW-BTC", 'count': '1'})
-    print(res)
-    data = list(res[0].values())[::]
-    # time.sleep(0.1)
-    #
-    # datas = list(res[0].values())[:-1]
-    # print(datas)
+        db = psycopg2.connect(host='localhost', dbname="coin_info", user='postgres', password='9876', port='5432')
+        cursor = db.cursor()
+        sql = "INSERT INTO candle(market, candle_date_time_utc, candle_date_time_kst, opening_price, high_price, low_price, trade_price, timestamp, candle_acc_trade_price, candle_acc_trade_volume,unit) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
+        cursor.execute(sql, data)
+        # cursor.fetchall()
+        db.commit()
+        print("done")
+        # try:
+        #     db = psycopg2.connect(host='localhost', dbname="coin_info", user='postgres', password='9876', port='5432')
+        #     cursor = db.cursor()
+        #     sql = "INSERT INTO candle(market, candle_date_time_utc, candle_date_time_kst, opening_price, high_price, low_price, trade_price, timestamp, candle_acc_trade_price, candle_acc_trade_volume,unit) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
+        #     cursor.execute(sql, data)
+        #     cursor.fetchmany()
+        #     db.commit()
+        #     print("done")
+        # except Exception as e:
+        #     print("please wait")
 
-
-    db = psycopg2.connect(host='localhost', dbname="coin_info", user='postgres', password='9876', port='5432')
-    cursor = db.cursor()
-    sql = "INSERT INTO candle(market, candle_date_time_utc, candle_date_time_kst, opening_price, high_price, low_price, trade_price, timestamp, candle_acc_trade_price, candle_acc_trade_volume,unit) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
-    cursor.execute(sql, data)
-    cursor.fetchall()
-    db.commit()
-
-    cursor.close()
-    db.close()
+        cursor.close()
+        db.close()
     # CREATE TABle candle(
     # market    VARCHAR(10),
     # candle_date_time_utc    VARCHAR(10),
