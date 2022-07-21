@@ -7,8 +7,25 @@ import requests
 import uuid
 import psycopg2
 import pandas as pd
+"""
+데이터베이스에서 데이터를 조회하는 함수
+"""
+def selectDB(columns, table):
+    db = psycopg2.connect(host='localhost', dbname="coin_info", user='postgres', password='9876', port='5432')
+    cursor = db.cursor()
+    sql = "SELECT {columns} FROM {table};".format(columns=columns,table=table)
 
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    for i in result:
+        print(i)
+    db.commit()
+    cursor.close()
+    db.close()
 
+"""
+데이터베이스에 데이터를 저장하는 함수
+"""
 def insertDB(table,data):
     db = psycopg2.connect(host='localhost', dbname="coin_info", user='postgres', password='9876', port='5432')
     cursor = db.cursor()
@@ -26,13 +43,13 @@ if __name__ == "__main__":
 
     upbit = pyupbit.Upbit(access, secret)
     # 매도하기 ask
-    data = upbit.sell_market_order("KRW-BTC",0.0002)
+    # data = upbit.sell_market_order("KRW-BTC",0.0002)
     # 매수하기 bid
     # data = upbit.buy_market_order("KRW-BTC", 6000)
-    data = list(data.values())
-    print(data)
-    insertDB(table='orders',data=data)
-
+    # data = list(data.values())
+    # print(data)
+    # insertDB(table='orders',data=data)
+    # selectDB('uuid, side','result')
 
 
 # """
