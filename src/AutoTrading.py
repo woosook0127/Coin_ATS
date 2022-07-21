@@ -26,15 +26,13 @@ class AutoTrading(QThread):
 
 #----------------------------------------------------------------------
     def activate(self, type_of_algs):
-        if type_of_algs == self.trading_algs.BREAKTHROUGH:
-            self.trading_algs.update_k(self.coin_type)
-            self.trading_algs.activate_BT(self.coin_type)
-        elif type_of_algs == self.trading_algs.RANGECOMPARE:
-            self.trading_algs.activate_RC()
-        elif type_of_algs == self.trading_algs.TPCHANGE:
-            self.trading_algs.activate_TC()
-        elif type_of_algs == self.trading_algs.NOISETRADE:
-            self.trading_algs.activate_NT()
+        self.trading_algs.update_k(self.coin_type)
+        if type_of_algs == self.trading_algs.HIGH:
+            self.trading_algs.activate_trading(self.coin_type, type_of_algs)
+        elif type_of_algs == self.trading_algs.MIDDLE:
+            self.trading_algs.activate_trading(self.coin_type, type_of_algs)
+        elif type_of_algs == self.trading_algs.LOW:
+            self.trading_algs.activate_trading(self.coin_type, type_of_algs)
         else:
             print("[SYSTEM] Error alg_types")
             return
@@ -60,7 +58,6 @@ class AutoTrading(QThread):
         self.exit()
 
 #----------------------------------------------------------------------
-
 if __name__=='__main__':
     AT = AutoTrading()
     AT.__init__()

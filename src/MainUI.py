@@ -153,6 +153,10 @@ class MainUI(QMainWindow, form_main):
 
     def clickLogin(self):
         if self.LoginButton.text() == "Login":
+            if self.sys_stat.access == None:
+                self.sys_stat.access = self.apiKey.text()
+                self.sys_stat.secret = self.secKey.text()
+
             apiKey = self.sys_stat.access
             secKey = self.sys_stat.secret
 
@@ -299,7 +303,6 @@ class MainUI(QMainWindow, form_main):
         
         print("[SYSTEM] Close MainUI")
         self.close()
-        #signal.pthread_kill(int(QThread.currentThreadId()), signal.SIGKILL)
         self.stop_system.emit()
         print("[SYSTEM] MainUI Closed")
         
