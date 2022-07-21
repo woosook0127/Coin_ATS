@@ -3,7 +3,10 @@ from pprint import pprint
 from tests import insertDB
 import psycopg2
 import time
-
+#-----------
+# 체결된 주문을 DB에 저장
+# 기능 테스트
+#----------
 access = 'xAfZ6fJqTwCygtSCxbUKiVVVAZCrzm16D6xl4mWi'
 secret = 'qkAnthvqDvx6qChrXpNS9dPIdWuaUIxif6bvxYLo'
 

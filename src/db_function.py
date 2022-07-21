@@ -49,7 +49,7 @@ if __name__ == "__main__":
     # data = list(data.values())
     # print(data)
     # insertDB(table='orders',data=data)
-    # selectDB('uuid, side','result')
+    selectDB('uuid, side,created_at','result')
 
 
 # """
