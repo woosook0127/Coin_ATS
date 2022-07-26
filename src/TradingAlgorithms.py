@@ -1,14 +1,16 @@
 from ctypes.wintypes import HACCEL
+from operator import is_
 import pyupbit
 import time
 from tqdm import tqdm
 import pandas as pd
 import numpy as np
 import datetime
+from SystemStatus import SystemStatus
 
 #----------------------------------------------------------------------
 class TradingAlgorithms():
-    def __init__(self, sys_stat):
+    def __init__(self, sys_stat: SystemStatus):
         self.sys_stat = sys_stat
         self.LOW = 2
         self.MIDDLE = 1
@@ -17,7 +19,8 @@ class TradingAlgorithms():
         self.secret = self.sys_stat.secret
         self.k_value = self.sys_stat.k_value
         self.k_term = self.sys_stat.k_term 
-        
+        self.buying_price = -1
+
     # 매수 목표가 조회 - 변동성 돌파 전략
     def get_target_price(self, coin_type, k):  
         df = pyupbit.get_ohlcv(coin_type, interval="day", count=2)
@@ -35,7 +38,7 @@ class TradingAlgorithms():
         time.sleep(0.1) # Redundant
         try:
             df = pyupbit.get_ohlcv(coin_type, count=term) # Redundant
-            if df == None:
+            if type(df) == type(None):
                 return 7210, 7210
             df['range'] = (df['high'] - df['low']) * k_value
             df['target'] = df['open'] + df['range'].shift(1) 
@@ -76,23 +79,25 @@ class TradingAlgorithms():
         return hyper_k
 
     def update_k(self, coin_type):
-        print(f"[SYSYEM] Update k-value: {self.k_value}")
+        print(f"[SYSYEM] Update {coin_type}'s k-value: {self.k_value}")
         self.k_value = self.find_hyper_k(coin_type, self.k_term)
         self.sys_stat.k_value = self.k_value
-        print(f"[SYSTEM] k-value Updated: {self.k_value}")
+        # self.k_value = 0.1
+        print(f"[SYSTEM] {coin_type}'s k-value Updated: {self.k_value}")
 
 #----------------------------------------------------------------------
     def activate_trading(self, coin_type, trading_type):
         if self.sys_stat.is_activating:
             self.upbit = pyupbit.Upbit(self.access, self.secret) # log-in
             # 자동매매 시작
-            print("[SYSTEM] Start AutoTrading")
-            
-            target = None
+            print(f"[SYSTEM] Start AutoTrading with {coin_type}")
         else:
             return 
 
         while True:
+            if not self.sys_stat.is_activating:
+                return 
+                
             if trading_type == self.LOW:
                 constraint = self.range_before(coin_type)
             elif trading_type == self.MIDDLE:
@@ -102,50 +107,55 @@ class TradingAlgorithms():
                 target = self.change_target(coin_type)
             else:
                 constraint = True
-
+            # constraint = True
             try:
                 if constraint:
                     now = datetime.datetime.now()
                     start_time = self.get_start_time(coin_type)
                     end_time = start_time + datetime.timedelta(days=1)
-                    self.sys_stat.my_coin = self.my_coin
-                    apr_price = self.my_coin * pyupbit.get_current_price(coin_type) # appraised price
-
+                    self.sys_stat.my_coin = self.upbit.get_balance(coin_type)
+                    apr_price = self.sys_stat.my_coin * pyupbit.get_current_price(coin_type) # appraised price
+                    
                     # Trading time
-                    if start_time < now < end_time - datetime.timedelta(seconds=120): # don't trading during 2min
+                    is_trading_time = start_time < now < end_time - datetime.timedelta(seconds=120)
+                    
+                    if is_trading_time: # don't trading during 2min
                         if target:
                             target_price = target
                         else:
                             target_price = self.get_target_price(coin_type, self.sys_stat.k_value)
+                        # print(f"Target pirce: {target_price}")
                         current_price = pyupbit.get_current_price(coin_type)
-                        profit_rate = current_price/buying_price
+                        profit_rate = current_price/self.buying_price
 
-                        if target_price < current_price:
+                        if target_price < current_price :
+                        # if True:
                             my_krw = self.upbit.get_balance("KRW")
                             if my_krw > 5000:
-                                print(f"SYS: Buy {coin_type}: {current_price}")
+                                print(f"[SYSTEM] Buy {coin_type} at {current_price}")
                                 self.upbit.buy_market_order(coin_type, my_krw*0.9995) # 전량 매수
-                                buying_price = current_price
+                                self.buying_price = current_price
                         if profit_rate >= 1.03: # 익절: 2.5%
-                            self.upbit.sell_market_order(coin_type, self.my_coin*0.9995)# 전량 매도 
+                            self.upbit.sell_market_order(coin_type, self.sys_stat.my_coin)# 전량 매도 
                         if 0 < profit_rate <= 0.97: # 손절: 3%
-                            self.upbit.sell_market_order(coin_type, self.my_coin*0.9995)# 전량 매도
+                            self.upbit.sell_market_order(coin_type, self.sys_stat.my_coin)# 전량 매도
 
                     # Resting time
                     else:
                         if apr_price > 5000: # 거래 최소금액 이상이면
-                            self.upbit.sell_market_order(coin_type, self.my_coin*0.9995) # 전량 매도
+                            self.upbit.sell_market_order(coin_type, self.sys_stat.my_coin) # 전량 매도
                         self.update_k(coin_type)
                     time.sleep(1)
 
             except Exception as e:
+                print(f"{e}, except")
                 time.sleep(0.1)
 
 #----------------------------------------------------------------------
     # Range compare function
     def range_before(self, coin_type):   
         df = pyupbit.get_ohlcv(coin_type, interval="day")    # coin data
-        if df != None:   
+        if type(df) != type(None):   
             two_days_ago = df.iloc[-3]                  # 2 days ago
             yesterday = df.iloc[-2]                     # yesterday
 
@@ -160,7 +170,7 @@ class TradingAlgorithms():
 #----------------------------------------------------------------------
     def change_target(self, coin_type):
         df = pyupbit.get_ohlcv(coin_type, interval="day")    # coin data
-        if df != None: 
+        if type(df) != type(None):   
             two_days_ago = df.iloc[-3]                  # 2 days ago
             yesterday = df.iloc[-2]                     # yesterday
             today = df.iloc[-1]                         # today
@@ -174,7 +184,7 @@ class TradingAlgorithms():
 #----------------------------------------------------------------------
     def noise_function(self, coin_type):
         df = pyupbit.get_ohlcv(coin_type, interval="day")    # coin data
-        if df != None: 
+        if type(df) != type(None):   
             yesterday = df.iloc[-2]                     # yesterday
     
             # Get noise

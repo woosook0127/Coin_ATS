@@ -7,6 +7,8 @@ from PyQt5 import uic, QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import QThread, pyqtSignal
 
+from SystemStatus import SystemStatus
+
 form_main = uic.loadUiType("resource/mymain.ui")[0]
 form_dialog_asset = uic.loadUiType("resource/asset.ui")[0]
 form_dialog_algorithm = uic.loadUiType("resource/algorithm.ui")[0]
@@ -109,7 +111,7 @@ class MainUI(QMainWindow, form_main):
     stop_trading = pyqtSignal()
     stop_system = pyqtSignal()
 
-    def __init__(self, sys_stat):
+    def __init__(self, sys_stat: SystemStatus):
         print("[SYSTEM] Init MainUI")
         super(MainUI, self).__init__()
         self.sys_stat = sys_stat
@@ -191,12 +193,12 @@ class MainUI(QMainWindow, form_main):
     def clickStart(self):
         if self.StartButton.text() == "Start":
             self.dialogAlgorithm_open()
-            self.start_trading.emit()  # 변동성 돌파 알고리즘 시작
+            self.start_trading.emit()  # 알고리즘 시작
             self.textEdit.append(f"------ START / {self.ticker} ------")
             self.StartButton.setText("Stop")
         else:
             self.dialogRest_open()
-            self.stop_trading.emit()  # 변동성 돌파 알고리즘 종료
+            self.stop_trading.emit()  # 알고리즘 종료
             self.textEdit.append(f"------- STOP / {self.ticker} -------")
             self.StartButton.setText("Start")
 
@@ -264,7 +266,7 @@ class MainUI(QMainWindow, form_main):
     def clickCoin(self, coin_type):
         kct = f"KRW-{coin_type}"  # krw coin type
         self.sys_stat.coin_type = kct
-
+        
         self.textEdit.append(f"-------- {coin_type} --------")
         self.ticker = coin_type
         self.UI_Overview.ticker = coin_type
