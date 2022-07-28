@@ -80,7 +80,7 @@
       <bool>true</bool>
      </attribute>
      <attribute name="horizontalHeaderDefaultSectionSize">
-      <number>100</number>
+      <number>80</number>
      </attribute>
      <attribute name="horizontalHeaderMinimumSectionSize">
       <number>34</number>
@@ -121,20 +121,32 @@
       <property name="text">
        <string>체결 시간</string>
       </property>
+      <property name="textAlignment">
+       <set>AlignCenter</set>
+      </property>
      </column>
      <column>
       <property name="text">
        <string>코인명</string>
+      </property>
+      <property name="textAlignment">
+       <set>AlignCenter</set>
       </property>
      </column>
      <column>
       <property name="text">
        <string>종류</string>
       </property>
+      <property name="textAlignment">
+       <set>AlignCenter</set>
+      </property>
      </column>
      <column>
       <property name="text">
        <string>거래 수량</string>
+      </property>
+      <property name="textAlignment">
+       <set>AlignCenter</set>
       </property>
      </column>
     </widget>
