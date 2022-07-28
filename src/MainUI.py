@@ -10,6 +10,14 @@ form_main = uic.loadUiType("resource/mymain.ui")[0]
 form_dialog_asset = uic.loadUiType("resource/asset.ui")[0]
 form_dialog_algorithm = uic.loadUiType("resource/algorithm.ui")[0]
 form_dialog_rest = uic.loadUiType("resource/rest.ui")[0]
+form_dialog_transaction = uic.loadUiType("resource/transaction.ui")[0]
+
+
+# -----------------------------------------------------------------------
+class QDialogTransaction(QtWidgets.QDialog, form_dialog_transaction):
+    def __init__(self, parent=None):
+        QtWidgets.QDialog.__init__(self, parent)
+        self.setupUi(self)
 
 
 # -----------------------------------------------------------------------
@@ -126,8 +134,11 @@ class MainUI(QMainWindow, form_main):
         self.LoginButton.clicked.connect(self.clickLogin)
         self.StartButton.clicked.connect(self.clickStart)
         self.AccountButton.clicked.connect(self.clickAccount)
-        self.AccountButton.setDisabled(True)
+        self.TransactionButton.clicked.connect(self.clickTransaction)
+
         self.StartButton.setDisabled(True)
+        self.AccountButton.setDisabled(True)
+        self.TransactionButton.setDisabled(True)
 
         self.btn_min1.clicked.connect(lambda: self.CandleButton('minute1'))
         self.btn_min15.clicked.connect(lambda: self.CandleButton('minute15'))
@@ -148,6 +159,11 @@ class MainUI(QMainWindow, form_main):
 
     def clickLogin(self):
         if self.LoginButton.text() == "Login":
+            if self.apiKey.text() == "" :
+                return
+            if self.secKey.text() == "" :
+                return
+
             self.sys_stat.access = self.apiKey.text()
             self.sys_stat.secret = self.secKey.text()
 
@@ -162,7 +178,6 @@ class MainUI(QMainWindow, form_main):
                 return
 
             else:
-                self.textEdit.append("    << KEY로 로그인 성공.>>")
                 self.UI_Balance.def_inputkey(apiKey, secKey)
                 balances = upbit.get_balances()  # self.ticker
                 balance = upbit.get_balance()
@@ -177,8 +192,10 @@ class MainUI(QMainWindow, form_main):
                     self.secKey.setDisabled(True)
                     self.apiKey.setDisabled(True)
                     self.AccountButton.setDisabled(False)
+                    self.TransactionButton.setDisabled(False)
                     self.StartButton.setDisabled(False)
                     self.LoginButton.setDisabled(True)
+                    self.textEdit.append("<< KEY로 로그인 성공>>")
                     self.textEdit.append("▶ 계좌 정보를 가져오는데 성공했습니다.")
                     self.textEdit.append(f"[ 보유 현금 : {balance:.4f} 원 ]")
                     self.textEdit.append(f"[ 보유 {self.ticker} : {COIN} {self.ticker} ]")
@@ -237,6 +254,10 @@ class MainUI(QMainWindow, form_main):
         if self.IdentityVerification:
             self.dialogAsset_open(self.sys_stat.access, self.sys_stat.secret)
 
+    def clickTransaction(self):
+        if self.IdentityVerification:
+            self.dialogTransaction_open()
+
     def dialogAsset_open(self, apiKey, secKey):
         dialogAsset = QDialogAsset()  # apiKey, secKey
         dialogAsset.setWindowTitle('Asset Management')
@@ -255,6 +276,12 @@ class MainUI(QMainWindow, form_main):
         dialogRest.setWindowTitle('Rest Select')
         dialogRest.setFixedSize(400, 330)
         dialogRest.exec_()
+
+    def dialogTransaction_open(self):
+        dialogTransaction = QDialogTransaction()
+        dialogTransaction.setWindowTitle('Transaction History')
+        dialogTransaction.setFixedSize(400, 625)
+        dialogTransaction.exec_()
 
     def clickCoin(self, coin_type):
         kct = f"KRW-{coin_type}"  # krw coin type
