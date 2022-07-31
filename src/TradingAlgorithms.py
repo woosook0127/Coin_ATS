@@ -98,8 +98,8 @@ class TradingAlgorithms():
             if not self.sys_stat.is_activating:
                 return 
                 
-            if trading_type == self.LOW:
-                constraint = self.range_before(coin_type)
+            if trading_type == self.LOW: # Only Break through algorithm
+                constraint = True
             elif trading_type == self.MIDDLE:
                 constraint = self.range_before(coin_type) & self.noise_function(coin_type)           
             elif trading_type == self.HIGH:
