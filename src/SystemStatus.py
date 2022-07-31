@@ -8,9 +8,9 @@ class SystemStatus():
         self.k_term = 14            # default [days]
         self.buying_price = -1      # defatlt [buying price of coin]
 
-        self.my_coin = None
+        self.my_coin = 0
         self.activate_trading = False 
-    
-#-----------------------------------------------------------------------
+        self.is_activating = False
+        self.algorithm = -1
 
 #-----------------------------------------------------------------------

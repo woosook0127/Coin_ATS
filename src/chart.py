@@ -73,9 +73,12 @@ class ChartWidget(QWidget):
     def __updateAxis(self):
         pvs = self.priceData.pointsVector()
         dtStart = QDateTime.fromMSecsSinceEpoch(int(pvs[0].x()))
-        if len(self.priceData) == self.viewLimit :
-            dtLast = QDateTime.fromMSecsSinceEpoch(int(pvs[-1].x()))
-        else:
+        try:
+            if len(self.priceData) == self.viewLimit :
+                dtLast = QDateTime.fromMSecsSinceEpoch(int(pvs[-1].x()))
+            else:
+                dtLast = dtStart.addSecs(self.viewLimit)
+        except:
             dtLast = dtStart.addSecs(self.viewLimit)
         ax = self.priceChart.axisX()
         ax.setRange(dtStart, dtLast)

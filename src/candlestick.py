@@ -77,7 +77,21 @@ class candleWidget(QWidget):
 
         # 축 설정
         axis_x = QDateTimeAxis()
-        axis_x.setFormat("hh:mm:ss")
+        if self.interval == 'minute1':
+            axis_x.setFormat("hh:mm:ss")
+        if self.interval == 'minute15':
+            axis_x.setFormat("hh:mm:ss")
+        if self.interval == 'minute60':
+            axis_x.setFormat("hh:mm:ss")
+        if self.interval == 'minute240':
+            axis_x.setFormat("yyyy-MM-dd")
+        if self.interval == 'day':
+            axis_x.setFormat("yyyy-MM-dd")
+        if self.interval == 'week':
+            axis_x.setFormat("yyyy-MM-dd")
+        if self.interval == 'month':
+            axis_x.setFormat("yyyy-MM-dd")
+
         self.chart.addAxis(axis_x, Qt.AlignBottom)
         self.series.attachAxis(axis_x)
 
@@ -109,53 +123,67 @@ class candleWidget(QWidget):
         self.setMinimumSize(750, 350)
         df = pyupbit.get_ohlcv(self.ticker, interval=self.interval, count=80)
 
-        # 캔들스틱 초기화
-        self.series = QCandlestickSeries()
-        self.series.setIncreasingColor(QColor(225, 35, 60))
-        self.series.setDecreasingColor(QColor(25, 100, 180))
-        self.series.setBodyOutlineVisible(0)
+        if type(df) != type(None):
+            # 캔들스틱 초기화
+            self.series = QCandlestickSeries()
+            self.series.setIncreasingColor(QColor(225, 35, 60))
+            self.series.setDecreasingColor(QColor(25, 100, 180))
+            self.series.setBodyOutlineVisible(0)
 
-        # OHLC 초기화
-        for index in df.index:
-            open = df.loc[index, 'open']
-            high = df.loc[index, 'high']
-            low = df.loc[index, 'low']
-            close = df.loc[index, 'close']
+            # OHLC 초기화
+            for index in df.index:
+                open = df.loc[index, 'open']
+                high = df.loc[index, 'high']
+                low = df.loc[index, 'low']
+                close = df.loc[index, 'close']
 
-            # time conversion
-            format = "%Y-%m-%d %H:%M:%S"
-            str_time = index.strftime(format)
-            dt = QDateTime.fromString(str_time, "yyyy-MM-dd hh:mm:ss")
-            ts = dt.toMSecsSinceEpoch()
-            # ts = index.timestamp() * 1000
-            # print(ts)
+                # time conversion
+                format = "%Y-%m-%d %H:%M:%S"
+                str_time = index.strftime(format)
+                dt = QDateTime.fromString(str_time, "yyyy-MM-dd hh:mm:ss")
+                ts = dt.toMSecsSinceEpoch()
+                # ts = index.timestamp() * 1000
+                # print(ts)
 
-            elem = QCandlestickSet(open, high, low, close, ts)
-            self.series.append(elem)
+                elem = QCandlestickSet(open, high, low, close, ts)
+                self.series.append(elem)
 
-        # Qchart 사용
-        self.chart = QChart()
-        self.chart.legend().hide()
-        self.chart.addSeries(self.series)  # data feeding
+            # Qchart 사용
+            self.chart = QChart()
+            self.chart.legend().hide()
+            self.chart.addSeries(self.series)  # data feeding
 
-        # 축 설정
-        axis_x = QDateTimeAxis()
-        axis_x.setFormat("hh:mm:ss")
-        self.chart.addAxis(axis_x, Qt.AlignBottom)
-        self.series.attachAxis(axis_x)
+            # 축 설정
+            axis_x = QDateTimeAxis()
+            if self.interval == 'minute1':
+                axis_x.setFormat("hh:mm:ss")
+            if self.interval == 'minute15':
+                axis_x.setFormat("hh:mm:ss")
+            if self.interval == 'minute60':
+                axis_x.setFormat("hh:mm:ss")
+            if self.interval == 'minute240':
+                axis_x.setFormat("yyyy-MM-dd")
+            if self.interval == 'day':
+                axis_x.setFormat("yyyy-MM-dd")
+            if self.interval == 'week':
+                axis_x.setFormat("yyyy-MM-dd")
+            if self.interval == 'month':
+                axis_x.setFormat("yyyy-MM-dd")
+            self.chart.addAxis(axis_x, Qt.AlignBottom)
+            self.series.attachAxis(axis_x)
 
-        axis_y = QValueAxis()
-        axis_y.setLabelFormat("%i")
-        self.chart.addAxis(axis_y, Qt.AlignLeft)
-        self.series.attachAxis(axis_y)
+            axis_y = QValueAxis()
+            axis_y.setLabelFormat("%i")
+            self.chart.addAxis(axis_y, Qt.AlignLeft)
+            self.series.attachAxis(axis_y)
 
-        # 레이아웃 설정
-        self.chart.layout().setContentsMargins(0, 0, 0, 0)
+            # 레이아웃 설정
+            self.chart.layout().setContentsMargins(0, 0, 0, 0)
 
-        # 차트 그리기
-        chart_view = QChartView(self.chart)
-        chart_view.setRenderHint(QPainter.Antialiasing)
-        self.candleView.setChart(self.chart)
+            # 차트 그리기
+            chart_view = QChartView(self.chart)
+            chart_view.setRenderHint(QPainter.Antialiasing)
+            self.candleView.setChart(self.chart)
 
     def updateInterval(self, interval):
         self.interval = interval

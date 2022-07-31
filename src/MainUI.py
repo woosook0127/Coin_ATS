@@ -1,4 +1,5 @@
 import math
+from tkinter import NONE
 import pyupbit
 import time, os, sys, signal, datetime
 
@@ -6,11 +7,18 @@ from PyQt5 import uic, QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import QThread, pyqtSignal
 
+from SystemStatus import SystemStatus
+
 form_main = uic.loadUiType("resource/mymain.ui")[0]
 form_dialog_asset = uic.loadUiType("resource/asset.ui")[0]
 form_dialog_algorithm = uic.loadUiType("resource/algorithm.ui")[0]
 form_dialog_rest = uic.loadUiType("resource/rest.ui")[0]
 
+# -----------------------------------------------------------------------
+class QDialogTransaction(QtWidgets.QDialog, form_dialog_transaction):
+    def __init__(self, parent=None):
+        QtWidgets.QDialog.__init__(self, parent)
+        self.setupUi(self)
 
 # -----------------------------------------------------------------------
 class QDialogRest(QtWidgets.QDialog, form_dialog_rest):
@@ -33,13 +41,17 @@ class QDialogRest(QtWidgets.QDialog, form_dialog_rest):
 
 # -----------------------------------------------------------------------
 class QDialogAlgorithm(QtWidgets.QDialog, form_dialog_algorithm):
-    def __init__(self, parent=None):
-        QtWidgets.QDialog.__init__(self, parent)
+    def __init__(self, parent):
+        QtWidgets.QDialog.__init__(self, None)
         self.setupUi(self)
+        self.parent = parent
         self.DialogButton.clicked.connect(self.dialogClose)
         self.Algorithm1Button.clicked.connect(self.clickAlgorithm1)
+        self.Algorithm1Button.clicked.connect(self.parent.algorithm_selection_1)
         self.Algorithm2Button.clicked.connect(self.clickAlgorithm2)
+        self.Algorithm2Button.clicked.connect(self.parent.algorithm_selection_2)
         self.Algorithm3Button.clicked.connect(self.clickAlgorithm3)
+        self.Algorithm3Button.clicked.connect(self.parent.algorithm_selection_3)
 
     def clickAlgorithm1(self):
         self.close()
@@ -104,7 +116,7 @@ class MainUI(QMainWindow, form_main):
     stop_trading = pyqtSignal()
     stop_system = pyqtSignal()
 
-    def __init__(self, sys_stat):
+    def __init__(self, sys_stat: SystemStatus):
         print("[SYSTEM] Init MainUI")
         super(MainUI, self).__init__()
         self.sys_stat = sys_stat
@@ -148,22 +160,28 @@ class MainUI(QMainWindow, form_main):
 
     def clickLogin(self):
         if self.LoginButton.text() == "Login":
+            if self.sys_stat.access == None:
+                self.sys_stat.access = self.apiKey.text()
+                self.sys_stat.secret = self.secKey.text()
+
             apiKey = self.sys_stat.access
             secKey = self.sys_stat.secret
-
-            self.textEdit.append("▶ 계좌 정보를 불러오는 중입니다.")
             upbit = pyupbit.Upbit(apiKey, secKey)
-            if upbit == None:
-                self.textEdit.append("    << KEY가 올바르지 않습니다.>>")
+            balances = upbit.get_balances()
+            self.textEdit.append("▶ 계좌 정보를 불러오는 중입니다.")
+            
+
+            if balances == {'error': {'message': '잘못된 엑세스 키입니다.', 'name': 'invalid_access_key'}}:
+                # print(self.balance)
+                self.textEdit.append("▶ KEY값이 에러를 반환 했습니다.")
                 return
+
             else:
-                self.textEdit.append("    << KEY로 로그인 성공.>>")
                 self.UI_Balance.def_inputkey(apiKey, secKey)
                 balances = upbit.get_balances()  # self.ticker
                 balance = upbit.get_balance()
                 COIN = upbit.get_balance(ticker=f"KRW-{self.ticker}")
 
-                # 이 if문빼도 되나??
                 if balances == {'error': {'message': '잘못된 엑세스 키입니다.', 'name': 'invalid_access_key'}}:
                     # print(self.balance)
                     self.textEdit.append("▶ KEY값이 에러를 반환 했습니다.")
@@ -173,8 +191,10 @@ class MainUI(QMainWindow, form_main):
                     self.secKey.setDisabled(True)
                     self.apiKey.setDisabled(True)
                     self.AccountButton.setDisabled(False)
+                    self.TransactionButton.setDisabled(False)
                     self.StartButton.setDisabled(False)
                     self.LoginButton.setDisabled(True)
+                    self.textEdit.append("<< KEY로 로그인 성공.>>")
                     self.textEdit.append("▶ 계좌 정보를 가져오는데 성공했습니다.")
                     self.textEdit.append(f"[ 보유 현금 : {balance:.4f} 원 ]")
                     self.textEdit.append(f"[ 보유 {self.ticker} : {COIN} {self.ticker} ]")
@@ -182,12 +202,12 @@ class MainUI(QMainWindow, form_main):
     def clickStart(self):
         if self.StartButton.text() == "Start":
             self.dialogAlgorithm_open()
-            self.start_trading.emit()  # 변동성 돌파 알고리즘 시작
+            self.start_trading.emit()  # 알고리즘 시작
             self.textEdit.append(f"------ START / {self.ticker} ------")
             self.StartButton.setText("Stop")
         else:
             self.dialogRest_open()
-            self.stop_trading.emit()  # 변동성 돌파 알고리즘 종료
+            self.stop_trading.emit()  # 알고리즘 종료
             self.textEdit.append(f"------- STOP / {self.ticker} -------")
             self.StartButton.setText("Start")
 
@@ -232,7 +252,11 @@ class MainUI(QMainWindow, form_main):
     def clickAccount(self):
         if self.IdentityVerification:
             self.dialogAsset_open(self.sys_stat.access, self.sys_stat.secret)
-
+            
+    def clickTransaction(self):
+        if self.IdentityVerification:
+            self.dialogTransaction_open()
+            
     def dialogAsset_open(self, apiKey, secKey):
         dialogAsset = QDialogAsset()  # apiKey, secKey
         dialogAsset.setWindowTitle('Asset Management')
@@ -241,7 +265,7 @@ class MainUI(QMainWindow, form_main):
         dialogAsset.exec_()
 
     def dialogAlgorithm_open(self):
-        dialogAlgorithm = QDialogAlgorithm()
+        dialogAlgorithm = QDialogAlgorithm(self)
         dialogAlgorithm.setWindowTitle('Algorithm Select')
         dialogAlgorithm.setFixedSize(400, 330)
         dialogAlgorithm.exec_()
@@ -255,7 +279,7 @@ class MainUI(QMainWindow, form_main):
     def clickCoin(self, coin_type):
         kct = f"KRW-{coin_type}"  # krw coin type
         self.sys_stat.coin_type = kct
-
+        
         self.textEdit.append(f"-------- {coin_type} --------")
         self.ticker = coin_type
         self.UI_Overview.ticker = coin_type
@@ -276,6 +300,15 @@ class MainUI(QMainWindow, form_main):
     def receiveTradingSignal(self, time, type, amount):
         self.textEdit.append(f"[{time}] {type} : {amount}")
 
+    def algorithm_selection_1(self):
+        self.sys_stat.algorithm = 0
+
+    def algorithm_selection_2(self):
+        self.sys_stat.algorithm = 1
+
+    def algorithm_selection_3(self):
+        self.sys_stat.algorithm = 2
+
     def closeEvent(self, event):
         self.UI_Overview.closeEvent(event)
         self.UI_Orderbook.closeEvent(event)
@@ -285,7 +318,6 @@ class MainUI(QMainWindow, form_main):
         
         print("[SYSTEM] Close MainUI")
         self.close()
-        #signal.pthread_kill(int(QThread.currentThreadId()), signal.SIGKILL)
         self.stop_system.emit()
         print("[SYSTEM] MainUI Closed")
         
