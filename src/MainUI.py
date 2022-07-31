@@ -14,6 +14,11 @@ form_dialog_asset = uic.loadUiType("resource/asset.ui")[0]
 form_dialog_algorithm = uic.loadUiType("resource/algorithm.ui")[0]
 form_dialog_rest = uic.loadUiType("resource/rest.ui")[0]
 
+# -----------------------------------------------------------------------
+class QDialogTransaction(QtWidgets.QDialog, form_dialog_transaction):
+    def __init__(self, parent=None):
+        QtWidgets.QDialog.__init__(self, parent)
+        self.setupUi(self)
 
 # -----------------------------------------------------------------------
 class QDialogRest(QtWidgets.QDialog, form_dialog_rest):
@@ -161,20 +166,22 @@ class MainUI(QMainWindow, form_main):
 
             apiKey = self.sys_stat.access
             secKey = self.sys_stat.secret
-
-            self.textEdit.append("▶ 계좌 정보를 불러오는 중입니다.")
             upbit = pyupbit.Upbit(apiKey, secKey)
-            if upbit == None:
-                self.textEdit.append("    << KEY가 올바르지 않습니다.>>")
+            balances = upbit.get_balances()
+            self.textEdit.append("▶ 계좌 정보를 불러오는 중입니다.")
+            
+
+            if balances == {'error': {'message': '잘못된 엑세스 키입니다.', 'name': 'invalid_access_key'}}:
+                # print(self.balance)
+                self.textEdit.append("▶ KEY값이 에러를 반환 했습니다.")
                 return
+
             else:
-                self.textEdit.append("    << KEY로 로그인 성공.>>")
                 self.UI_Balance.def_inputkey(apiKey, secKey)
                 balances = upbit.get_balances()  # self.ticker
                 balance = upbit.get_balance()
                 COIN = upbit.get_balance(ticker=f"KRW-{self.ticker}")
 
-                # 이 if문빼도 되나??
                 if balances == {'error': {'message': '잘못된 엑세스 키입니다.', 'name': 'invalid_access_key'}}:
                     # print(self.balance)
                     self.textEdit.append("▶ KEY값이 에러를 반환 했습니다.")
@@ -184,8 +191,10 @@ class MainUI(QMainWindow, form_main):
                     self.secKey.setDisabled(True)
                     self.apiKey.setDisabled(True)
                     self.AccountButton.setDisabled(False)
+                    self.TransactionButton.setDisabled(False)
                     self.StartButton.setDisabled(False)
                     self.LoginButton.setDisabled(True)
+                    self.textEdit.append("<< KEY로 로그인 성공.>>")
                     self.textEdit.append("▶ 계좌 정보를 가져오는데 성공했습니다.")
                     self.textEdit.append(f"[ 보유 현금 : {balance:.4f} 원 ]")
                     self.textEdit.append(f"[ 보유 {self.ticker} : {COIN} {self.ticker} ]")
@@ -243,7 +252,11 @@ class MainUI(QMainWindow, form_main):
     def clickAccount(self):
         if self.IdentityVerification:
             self.dialogAsset_open(self.sys_stat.access, self.sys_stat.secret)
-
+            
+    def clickTransaction(self):
+        if self.IdentityVerification:
+            self.dialogTransaction_open()
+            
     def dialogAsset_open(self, apiKey, secKey):
         dialogAsset = QDialogAsset()  # apiKey, secKey
         dialogAsset.setWindowTitle('Asset Management')
