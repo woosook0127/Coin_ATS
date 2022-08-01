@@ -492,6 +492,13 @@ background:rgb(0,0,0);
        </spacer>
       </item>
       <item>
+       <widget class="QPushButton" name="TransactionButton">
+        <property name="text">
+         <string>거래 내역</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="AccountButton">
         <property name="text">
          <string>자산 관리</string>
