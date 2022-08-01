@@ -1,5 +1,4 @@
 import math
-from tkinter import NONE
 import pyupbit
 import time, os, sys, signal, datetime
 
