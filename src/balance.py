@@ -25,14 +25,15 @@ class Worker(QThread):
     def run(self):
         while self.alive:
             self.upbit = pyupbit.Upbit(self.apikey, self.seckey)
-
-            if self.start_balance != None:
-                cur_balance = self.upbit.get_balance()
-                self.balance.emit(self.start_balance, cur_balance)
-                time.sleep(1)
-            else:
-                time.sleep(1)
-
+            try:
+                if self.start_balance != None:
+                    cur_balance = self.upbit.get_balance()
+                    self.balance.emit(self.start_balance, cur_balance)
+                    time.sleep(1)
+                else:
+                    time.sleep(1)
+            except:
+                pass
     def pyupbit_update(self):
         self.upbit = pyupbit.Upbit(self.apikey, self.seckey)
         self.start_balance = self.upbit.get_balance()

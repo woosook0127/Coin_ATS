@@ -13,6 +13,7 @@ form_main = uic.loadUiType("resource/mymain.ui")[0]
 form_dialog_asset = uic.loadUiType("resource/asset.ui")[0]
 form_dialog_algorithm = uic.loadUiType("resource/algorithm.ui")[0]
 form_dialog_rest = uic.loadUiType("resource/rest.ui")[0]
+form_dialog_transaction = uic.loadUiType("resource/transaction.ui")[0]
 
 # -----------------------------------------------------------------------
 class QDialogTransaction(QtWidgets.QDialog, form_dialog_transaction):
@@ -138,9 +139,12 @@ class MainUI(QMainWindow, form_main):
         self.LoginButton.clicked.connect(self.clickLogin)
         self.StartButton.clicked.connect(self.clickStart)
         self.AccountButton.clicked.connect(self.clickAccount)
+        self.TransactionButton.clicked.connect(self.clickTransaction)
+
         self.AccountButton.setDisabled(True)
         self.StartButton.setDisabled(True)
-
+        self.TransactionButton.setDisabled(True)
+        
         self.btn_min1.clicked.connect(lambda: self.CandleButton('minute1'))
         self.btn_min15.clicked.connect(lambda: self.CandleButton('minute15'))
         self.btn_hour1.clicked.connect(lambda: self.CandleButton('minute60'))
@@ -275,6 +279,12 @@ class MainUI(QMainWindow, form_main):
         dialogRest.setWindowTitle('Rest Select')
         dialogRest.setFixedSize(400, 330)
         dialogRest.exec_()
+    
+    def dialogTransaction_open(self):
+        dialogTransaction = QDialogTransaction()
+        dialogTransaction.setWindowTitle('Transaction History')
+        dialogTransaction.setFixedSize(400, 625)
+        dialogTransaction.exec_()
 
     def clickCoin(self, coin_type):
         kct = f"KRW-{coin_type}"  # krw coin type
