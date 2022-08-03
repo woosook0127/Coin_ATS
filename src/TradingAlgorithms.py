@@ -76,7 +76,7 @@ class TradingAlgorithms():
         filter = df['Profit_rate'] == df['Profit_rate'].max()
         hyper_k = df[filter].iloc[0,2]
 
-        return hyper_k
+        return round(hyper_k, 3)
 
     def update_k(self, coin_type):
         print(f"[SYSYEM] Update {coin_type}'s k-value: {self.k_value}")
