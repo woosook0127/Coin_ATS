@@ -83,28 +83,28 @@ class QDialogAsset(QtWidgets.QDialog, form_dialog_asset):
         STX = upbit.get_balance(ticker="KRW-STX")
         SOL = upbit.get_balance(ticker="KRW-SOL")
         KNC = upbit.get_balance(ticker="KRW-KNC")
-        TRX = upbit.get_balance(ticker="KRW-TRX")
+        ADA = upbit.get_balance(ticker="KRW-ADA")
 
         self.BTC_Quantity.setText(f"{BTC:,}")
         self.ETH_Quantity.setText(f"{ETH:,}")
         self.STX_Quantity.setText(f"{STX:,}")
         self.SOL_Quantity.setText(f"{SOL:,}")
         self.KNC_Quantity.setText(f"{KNC:,}")
-        self.TRX_Quantity.setText(f"{TRX:,}")
+        self.ADA_Quantity.setText(f"{ADA:,}")
 
         BTC_Price = pyupbit.get_current_price("KRW-BTC")
         ETH_Price = pyupbit.get_current_price("KRW-ETH")
         STX_Price = pyupbit.get_current_price("KRW-STX")
         SOL_Price = pyupbit.get_current_price("KRW-SOL")
         KNC_Price = pyupbit.get_current_price("KRW-KNC")
-        TRX_Price = pyupbit.get_current_price("KRW-TRX")
+        ADA_Price = pyupbit.get_current_price("KRW-ADA")
 
         self.BTC_Price.setText(f"{BTC * BTC_Price:.2f}")
         self.ETH_Price.setText(f"{ETH * ETH_Price:.2f}")
         self.STX_Price.setText(f"{STX * STX_Price:.2f}")
         self.SOL_Price.setText(f"{SOL * SOL_Price:.2f}")
         self.KNC_Price.setText(f"{KNC * KNC_Price:.2f}")
-        self.TRX_Price.setText(f"{TRX * TRX_Price:.2f}")
+        self.ADA_Price.setText(f"{ADA * ADA_Price:.2f}")
 
     def dialogClose(self):
         self.close()
@@ -157,7 +157,7 @@ class MainUI(QMainWindow, form_main):
         self.btn_STX.clicked.connect(lambda: self.clickCoin("STX"))
         self.btn_SOL.clicked.connect(lambda: self.clickCoin("SOL"))
         self.btn_KNC.clicked.connect(lambda: self.clickCoin("KNC"))
-        self.btn_TRX.clicked.connect(lambda: self.clickCoin("TRX"))
+        self.btn_ADA.clicked.connect(lambda: self.clickCoin("ADA"))
 
         self.show()
 
@@ -241,7 +241,7 @@ class MainUI(QMainWindow, form_main):
             self.btn_STX.hide()
             self.btn_SOL.hide()
             self.btn_KNC.hide()
-            self.btn_TRX.hide()
+            self.btn_ADA.hide()
             self.ToggleButton.setText("▶")
         else:
             self.btn_BTC.show()
@@ -249,7 +249,7 @@ class MainUI(QMainWindow, form_main):
             self.btn_STX.show()
             self.btn_SOL.show()
             self.btn_KNC.show()
-            self.btn_TRX.show()
+            self.btn_ADA.show()
             self.ToggleButton.setText("◀")
 
     def clickAccount(self):

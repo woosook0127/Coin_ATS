@@ -472,9 +472,9 @@ background:rgb(0,0,0);
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btn_TRX">
+       <widget class="QPushButton" name="btn_ADA">
         <property name="text">
-         <string>TRX</string>
+         <string>ADA</string>
         </property>
        </widget>
       </item>
