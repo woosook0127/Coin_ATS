@@ -1,4 +1,3 @@
-from ctypes.wintypes import HACCEL
 from operator import is_
 import pyupbit
 import time
@@ -20,7 +19,14 @@ class TradingAlgorithms():
         self.k_value = self.sys_stat.k_value
         self.k_term = self.sys_stat.k_term 
         self.buying_price = -1
+        
+        self.print_tp = True
 
+    def print_target_price(self, price):
+        if self.print_tp:
+            print(f"[SYSTEM] Target pirce: {price}")
+            self.print_tp = False
+    
     # 매수 목표가 조회 - 변동성 돌파 전략
     def get_target_price(self, coin_type, k):  
         df = pyupbit.get_ohlcv(coin_type, interval="day", count=2)
@@ -88,6 +94,7 @@ class TradingAlgorithms():
 #----------------------------------------------------------------------
     def activate_trading(self, coin_type, trading_type):
         if self.sys_stat.is_activating:
+            target = None
             self.upbit = pyupbit.Upbit(self.access, self.secret) # log-in
             # 자동매매 시작
             print(f"[SYSTEM] Start AutoTrading with {coin_type}")
@@ -97,7 +104,6 @@ class TradingAlgorithms():
         while True:
             if not self.sys_stat.is_activating:
                 return 
-            target = None
 
             if trading_type == self.HIGH: # Only Break through algorithm
                 constraint = True
@@ -107,7 +113,7 @@ class TradingAlgorithms():
                 constraint = self.range_before(coin_type) & self.noise_function(coin_type)
                 target = self.change_target(coin_type)
             else:
-                constraint = True
+                return
             # constraint = True
             try:
                 if constraint:
@@ -125,18 +131,18 @@ class TradingAlgorithms():
                             target_price = target
                         else:
                             target_price = self.get_target_price(coin_type, self.sys_stat.k_value)
-                        # print(f"Target pirce: {target_price}")
+                        self.print_target_price(target_price)
                         current_price = pyupbit.get_current_price(coin_type)
                         profit_rate = current_price/self.buying_price
 
                         if target_price < current_price :
-                        # if True:
                             my_krw = self.upbit.get_balance("KRW")
                             if my_krw > 5000:
+                                self.print_tp=True
                                 print(f"[SYSTEM] Buy {coin_type} at {current_price}")
                                 self.upbit.buy_market_order(coin_type, my_krw*0.9995) # 전량 매수
                                 self.buying_price = current_price
-                        if profit_rate >= 1.03: # 익절: 2.5%
+                        if profit_rate >= 1.03: # 익절: 3%
                             self.upbit.sell_market_order(coin_type, self.sys_stat.my_coin)# 전량 매도 
                         if 0 < profit_rate <= 0.97: # 손절: 3%
                             self.upbit.sell_market_order(coin_type, self.sys_stat.my_coin)# 전량 매도
@@ -145,6 +151,7 @@ class TradingAlgorithms():
                     else:
                         if apr_price > 5000: # 거래 최소금액 이상이면
                             self.upbit.sell_market_order(coin_type, self.sys_stat.my_coin) # 전량 매도
+                        self.print_tp = True
                         self.update_k(coin_type)
                     time.sleep(1)
 
@@ -152,6 +159,18 @@ class TradingAlgorithms():
                 print(f"{e}, except")
                 time.sleep(0.1)
 
+    def deactivate(self):
+        self.upbit = pyupbit.Upbit(self.access, self.secret)
+        print("[SYSTEM] Stop Trading")
+        self.sys_stat.is_activating = False
+        try:
+            if self.sys_stat.my_coin != -1:
+                self.upbit.sell_markt_order(self.sys_stat.coin_type, self.sys_stat.my_coin)
+                print(f"[SYSTEM] Sell {self.sys_stat.coin_type}")
+
+        except Exception as e:
+            print(f"[EXCEPTION] {e}")
+            time.sleep(0.1)
 #----------------------------------------------------------------------
     # Range compare function
     def range_before(self, coin_type):   
