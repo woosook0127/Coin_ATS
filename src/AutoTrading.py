@@ -48,7 +48,7 @@ class AutoTrading(QThread):
         self.sys_stat.is_activating = False
         try:
             if self.sys_stat.my_coin != -1:
-                self.upbit.sell_market_order(self.sys_stat.coin_type, self.sys_stat.my_coin*0.9995)
+                self.upbit.sell_market_order(self.sys_stat.coin_type, self.sys_stat.my_coin)
                 print(f"[SYSTEM] Sell {self.sys_stat.coin_type}")
 
         except Exception as e:
