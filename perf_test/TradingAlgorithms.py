@@ -21,6 +21,7 @@ class TradingAlgorithms():
         self.buying_price = -1
         
         self.print_tp = True
+        self.plus_cut = False
 
     def print_target_price(self, price):
         if self.print_tp:
@@ -95,6 +96,7 @@ class TradingAlgorithms():
     def activate_trading(self, coin_type, trading_type):
         if self.sys_stat.is_activating:
             target = None
+            selling_price = 0
             self.upbit = pyupbit.Upbit(self.access, self.secret) # log-in
             # 자동매매 시작
             print(f"[SYSTEM] Start AutoTrading with {coin_type}")
@@ -127,12 +129,15 @@ class TradingAlgorithms():
                     is_trading_time = start_time < now < end_time - datetime.timedelta(seconds=120)
                     
                     if is_trading_time: # don't trading during 2min
+                        current_price = pyupbit.get_current_price(coin_type)
                         if target:
                             target_price = target
                         else:
-                            target_price = self.get_target_price(coin_type, self.sys_stat.k_value)
+                            if self.plus_cut:
+                                target_price = selling_price*1.0075
+                            else:
+                                target_price = self.get_target_price(coin_type, self.sys_stat.k_value)
                         self.print_target_price(target_price)
-                        current_price = pyupbit.get_current_price(coin_type)
                         profit_rate = current_price/self.buying_price
 
                         if target_price < current_price :
@@ -142,15 +147,16 @@ class TradingAlgorithms():
                                 print(f"[SYSTEM] Buy {coin_type} at {current_price}")
                                 self.upbit.buy_market_order(coin_type, my_krw*0.9995) # 전량 매수
                                 self.buying_price = current_price
-                        if profit_rate >= 1.03: # 익절: 3%
-                            self.upbit.sell_market_order(coin_type, self.sys_stat.my_coin)# 전량 매도 
+                        if profit_rate >= 1.03: # 익절: 3%, 목표가 재설정
+                            self.upbit.sell_market_order(coin_type, self.sys_stat.my_coin)# 전량 매도
+                            selling_price = current_price
+                            self.plus_cut = True
                         if 0 < profit_rate <= 0.97: # 손절: 3%
                             self.upbit.sell_market_order(coin_type, self.sys_stat.my_coin)# 전량 매도
 
                     # Resting time
                     else:
-                        if apr_price > 5000: # 거래 최소금액 이상이면
-                            self.upbit.sell_market_order(coin_type, self.sys_stat.my_coin) # 전량 매도
+                        self.plus_cut = False
                         self.print_tp = True
                         self.update_k(coin_type)
                     time.sleep(1)
