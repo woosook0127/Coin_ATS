@@ -151,8 +151,10 @@ class TradingAlgorithms():
                             self.upbit.sell_market_order(coin_type, self.sys_stat.my_coin)# 전량 매도
                             selling_price = current_price
                             self.plus_cut = True
-                        if 0 < profit_rate <= 0.97: # 손절: 3%
+                        if 0 < profit_rate <= 0.985: # 손절: 3%
                             self.upbit.sell_market_order(coin_type, self.sys_stat.my_coin)# 전량 매도
+                            selling_pirce = current_price
+                            self.plus_cut = True
 
                     # Resting time
                     else:
