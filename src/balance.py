@@ -66,7 +66,7 @@ class BalanceWidget(QWidget):
         # print(cur_balance)
         self.label_start.setText(f"{start_balance:.4f}")
         self.label_current.setText(f"{cur_balance:.4f}")
-        profit = (cur_balance / start_balance) * 100 - 100
+        profit = round((cur_balance / start_balance) * 100 - 100, 3)
         self.label_profit.setText(f"{profit:,} %")
         self.def_updateStyle()
 

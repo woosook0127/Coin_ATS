@@ -22,17 +22,21 @@ class QDialogTransaction(QtWidgets.QDialog, form_dialog_transaction):
 
 # -----------------------------------------------------------------------
 class QDialogRest(QtWidgets.QDialog, form_dialog_rest):
-    def __init__(self, parent=None):
-        QtWidgets.QDialog.__init__(self, parent)
+    def __init__(self, parent):
+        QtWidgets.QDialog.__init__(self, None)
         self.setupUi(self)
+        self.parent = parent
+
         self.DialogButton.clicked.connect(self.dialogClose)
         self.SoldButton.clicked.connect(self.clickSold)
         self.LeaveButton.clicked.connect(self.clickLeave)
 
     def clickSold(self):
+        self.parent.selling_signal_not_turn_on = False
         self.close()
 
     def clickLeave(self):
+        self.parent.selling_signal_not_turn_on = False
         self.close()
 
     def dialogClose(self):
@@ -45,6 +49,7 @@ class QDialogAlgorithm(QtWidgets.QDialog, form_dialog_algorithm):
         QtWidgets.QDialog.__init__(self, None)
         self.setupUi(self)
         self.parent = parent
+
         self.DialogButton.clicked.connect(self.dialogClose)
         self.Algorithm1Button.clicked.connect(self.clickAlgorithm1)
         self.Algorithm1Button.clicked.connect(self.parent.algorithm_selection_1)
@@ -54,12 +59,15 @@ class QDialogAlgorithm(QtWidgets.QDialog, form_dialog_algorithm):
         self.Algorithm3Button.clicked.connect(self.parent.algorithm_selection_3)
 
     def clickAlgorithm1(self):
+        self.parent.alg_type_not_selected = False
         self.close()
 
     def clickAlgorithm2(self):
+        self.parent.alg_type_not_selected = False
         self.close()
 
     def clickAlgorithm3(self):
+        self.parent.alg_type_not_selected = False
         self.close()
 
     def dialogClose(self):
@@ -120,6 +128,10 @@ class MainUI(QMainWindow, form_main):
         print("[SYSTEM] Init MainUI")
         super(MainUI, self).__init__()
         self.sys_stat = sys_stat
+
+        self.coin_type_not_selected = True
+        self.alg_type_not_selected = True
+        self.selling_signal_not_turn_on = True
 
         # UI 세팅
         self.vw = None
@@ -205,14 +217,23 @@ class MainUI(QMainWindow, form_main):
     def clickStart(self):
         if self.StartButton.text() == "Start":
             self.dialogAlgorithm_open()
+            if self.alg_type_not_selected:
+                return
+            if self.coin_type_not_selected:
+                print("[SYSTEM] Select the Type of coin you want to trade with")
+                self.sys_stat.coin_type_not_selected = True
+                return
             self.start_trading.emit()  # 알고리즘 시작
             self.textEdit.append(f"------ START / {self.ticker} ------")
             self.StartButton.setText("Stop")
         else:
             self.dialogRest_open()
+            if self.selling_signal_not_turn_on:
+                return 
             self.stop_trading.emit()  # 알고리즘 종료
             self.textEdit.append(f"------- STOP / {self.ticker} -------")
             self.StartButton.setText("Start")
+            self.selling_signal_not_turn_on = True
 
     def clickToggleCandle(self):
         if self.btn_toggle.text() == "◀":
@@ -274,7 +295,7 @@ class MainUI(QMainWindow, form_main):
         dialogAlgorithm.exec_()
 
     def dialogRest_open(self):
-        dialogRest = QDialogRest()
+        dialogRest = QDialogRest(self)
         dialogRest.setWindowTitle('Rest Select')
         dialogRest.setFixedSize(400, 330)
         dialogRest.exec_()
@@ -288,6 +309,7 @@ class MainUI(QMainWindow, form_main):
     def clickCoin(self, coin_type):
         kct = f"KRW-{coin_type}"  # krw coin type
         self.sys_stat.coin_type = kct
+        self.coin_type_not_selected = False
         
         self.textEdit.append(f"-------- {coin_type} --------")
         self.ticker = coin_type

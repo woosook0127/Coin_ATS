@@ -116,14 +116,13 @@ class TradingAlgorithms():
                 target = self.change_target(coin_type)
             else:
                 return
-            # constraint = True
             try:
                 if constraint:
                     now = datetime.datetime.now()
                     start_time = self.get_start_time(coin_type)
                     end_time = start_time + datetime.timedelta(days=1)
                     self.sys_stat.my_coin = self.upbit.get_balance(coin_type)
-                    apr_price = self.sys_stat.my_coin * pyupbit.get_current_price(coin_type) # appraised price
+                    # apr_price = self.sys_stat.my_coin * pyupbit.get_current_price(coin_type) # appraised price
                     
                     # Trading time
                     is_trading_time = start_time < now < end_time - datetime.timedelta(seconds=120)
@@ -139,7 +138,6 @@ class TradingAlgorithms():
                                 target_price = self.get_target_price(coin_type, self.sys_stat.k_value)
                         self.print_target_price(target_price)
                         profit_rate = current_price/self.buying_price
-                        print(f"PROFIT RATE: {profit_rate}")
 
                         if target_price < current_price :
                             my_krw = self.upbit.get_balance("KRW")
@@ -162,9 +160,6 @@ class TradingAlgorithms():
                         self.update_k(coin_type)
                     time.sleep(1)
 
-                print("Wait a 30 sec")
-                time.sleep(30)
-            
             except Exception as e:
                 print(f"{e}, except")
                 time.sleep(0.1)
