@@ -203,7 +203,7 @@ class TradingAlgorithms():
             two_days_ago_range = two_days_ago['high'] - two_days_ago['low']
             yesterday_range = yesterday['high'] - yesterday['low']
 
-            return today['open'] + yesterday_range*yesterday_range/two_days_ago_range
+            return today['open'] + two_days_ago_range
         return None
 
 #----------------------------------------------------------------------
