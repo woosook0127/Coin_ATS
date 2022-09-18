@@ -82,9 +82,6 @@ class QDialogAsset(QtWidgets.QDialog, form_dialog_asset):
         self.DialogButton.clicked.connect(self.dialogClose)
 
     def dialogAccount(self, apiKey, secKey):
-        self.apiKey = apiKey
-        self.secKey = secKey
-
         upbit = pyupbit.Upbit(apiKey, secKey)
         BTC = upbit.get_balance(ticker="KRW-BTC")
         ETH = upbit.get_balance(ticker="KRW-ETH")

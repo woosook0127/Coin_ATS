@@ -61,9 +61,9 @@
          <number>0</number>
         </property>
         <item row="6" column="1">
-         <widget class="QLabel" name="TRX_Quantity">
+         <widget class="QLabel" name="ADA_Quantity">
           <property name="text">
-           <string>TRX_Quantity</string>
+           <string>ADA_Quantity</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -116,9 +116,9 @@
          </widget>
         </item>
         <item row="6" column="0">
-         <widget class="QLabel" name="label_TRX">
+         <widget class="QLabel" name="label_ADA">
           <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;TRX&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;ADA&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -259,9 +259,9 @@
          </widget>
         </item>
         <item row="6" column="2">
-         <widget class="QLabel" name="TRX_Price">
+         <widget class="QLabel" name="ADA_Price">
           <property name="text">
-           <string>TRX_Price</string>
+           <string>ADA_Price</string>
           </property>
          </widget>
         </item>
