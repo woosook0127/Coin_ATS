@@ -30,7 +30,7 @@ class candleWidget(QWidget):
         super().__init__(parent)
         uic.loadUi("resource/candle.ui",self)
         self.ticker = ticker
-        self.interval = 'minute1'
+        self.interval = 'day'
 
         # 쓰레드 초기화
         self.worker = Worker(ticker)
