@@ -20,8 +20,8 @@ class TradingAlgorithms():
         self.k_term = self.sys_stat.k_term 
         self.buying_price = -1
         
-        self.print_tp = True
-        self.plus_cut = False
+        self.print_tp = True   # Flag for Printing target price
+        self.plus_cut = False  # Flag for Sell at a profit
 
     def print_target_price(self, price):
         if self.print_tp:
@@ -139,6 +139,7 @@ class TradingAlgorithms():
                                 target_price = self.get_target_price(coin_type, self.sys_stat.k_value)
                         self.print_target_price(target_price)
                         profit_rate = current_price/self.buying_price
+                        print(f"PROFIT RATE: {profit_rate}")
 
                         if target_price < current_price :
                             my_krw = self.upbit.get_balance("KRW")
@@ -151,11 +152,9 @@ class TradingAlgorithms():
                             self.upbit.sell_market_order(coin_type, self.sys_stat.my_coin)# 전량 매도
                             selling_price = current_price
                             self.plus_cut = True
-                        if 0 < profit_rate <= 0.985: # 손절: 3%
+                        if 0 < profit_rate <= 0.985: # 손절: 1.5%
                             self.upbit.sell_market_order(coin_type, self.sys_stat.my_coin)# 전량 매도
-                            selling_pirce = current_price
-                            self.plus_cut = True
-
+                    
                     # Resting time
                     else:
                         self.plus_cut = False
@@ -163,6 +162,9 @@ class TradingAlgorithms():
                         self.update_k(coin_type)
                     time.sleep(1)
 
+                print("Wait a 30 sec")
+                time.sleep(30)
+            
             except Exception as e:
                 print(f"{e}, except")
                 time.sleep(0.1)
